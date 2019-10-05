@@ -7,8 +7,10 @@
       MaxAuthTries 3
       MaxSessions 5
       PasswordAuthentication no
+  register: sshd
 
 - name: Restart sshd
   service:
     name: sshd
     state: restarted
+  when: sshd.changed == true
