@@ -61,6 +61,7 @@
     regexp: "^en_GB.UTF-8 UTF-8"
     line: "# en_GB.UTF-8 UTF-8"
     backrefs: yes
+  register: dis_en_GB
 
 - name: Enable en_US
   lineinfile:
@@ -68,9 +69,11 @@
     regexp: "^# en_US.UTF-8 UTF-8"
     line: en_US.UTF-8 UTF-8
     backrefs: yes
+  register: ena_en_US
 
 - name: Generate locale
   command: locale-gen
+  when: dis_en_GB.changed == true or ena_en_US.changed == true
 
 - name: Set timezone
   lineinfile:
