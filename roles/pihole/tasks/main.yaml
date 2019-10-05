@@ -13,6 +13,7 @@
 - name: Start/Update pihole container
   docker_container:
     name: pihole
+    hostname: "{{ inventory_hostname }}"
     image: pihole/pihole:4.3.2-1_armhf
     restart_policy: unless-stopped
     env:
@@ -22,7 +23,7 @@
       WEBPASSWORD: "Intranet"
       DNS1: "1.1.1.1"
       DNS2: "2606:4700:4700::1111"
-      VIRTUAL_HOST: "{{ ansible_hostname }}"
+      VIRTUAL_HOST: "{{ inventory_hostname }}"
       DNSMASQ_LISTENING: "local"
     dns_servers:
       - 127.0.0.1
