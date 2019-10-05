@@ -91,13 +91,19 @@
   lineinfile:
     path: /etc/hostname
     regexp: "^"
-    line: raspberrypi-bkp
+    line: "{{ inventory_hostname }}"
+  register: pi_hostname
 
 - name: Set hosts
   lineinfile:
     path: /etc/hosts
     regexp: "^127.0.1.1"
-    line: 127.0.1.1       raspberrypi-bkp
+    line: 127.0.1.1       {{ inventory_hostname }}
+  register: pi_hosts
+
+- name: Reboot after hostname change
+  reboot:
+  when: pi_hostname.changed == true or pi_hosts.changed == true
 
 - name: Set custom DNS servers
   blockinfile:
