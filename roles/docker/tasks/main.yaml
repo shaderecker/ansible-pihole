@@ -2,7 +2,6 @@
   apt:
     force_apt_get: yes
     name:
-      - apt-transport-https
       - gnupg2
       - software-properties-common
     state: latest
