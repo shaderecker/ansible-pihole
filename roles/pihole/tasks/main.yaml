@@ -6,5 +6,40 @@
     state: directory
     mode: 0755
 
-- name: Install pihole
-  script: ../script/pihole-bkp.sh
+- name: Get IPv6
+  shell: ifconfig | grep fd00 | cut -d" " -f10
+  register: ipv6
+
+- name: Start/Update pihole container
+  docker_container:
+    name: pihole
+    image: pihole/pihole:4.3.2-1_armhf
+    restart_policy: unless-stopped
+    env:
+      TZ: "Europe/Berlin"
+      ServerIP: "{{ ansible_host }}"
+      ServerIPv6: "{{ ipv6.stdout }}"
+      WEBPASSWORD: "Intranet"
+      DNS1: "1.1.1.1"
+      DNS2: "2606:4700:4700::1111"
+      VIRTUAL_HOST: "{{ ansible_hostname }}"
+      DNSMASQ_LISTENING: "local"
+    dns_servers:
+      - 127.0.0.1
+      - 1.1.1.1
+    network_mode: host
+    volumes:
+      - /home/pi/pihole/pihole/:/etc/pihole/
+      - /home/pi/pihole/dnsmasq.d/:/etc/dnsmasq.d/
+    log_driver: json-file
+    log_options:
+      max-size: "10m"
+      max-file: "5"
+
+- name: Check pihole container
+  uri:
+    url: http://localhost
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 10
