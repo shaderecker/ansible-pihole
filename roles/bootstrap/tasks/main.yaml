@@ -103,8 +103,10 @@
   blockinfile:
     path: /etc/dhcpcd.conf
     block: static domain_name_servers=1.1.1.1 8.8.8.8
+  register: dns
 
 - name: Restart dhcpcd
   service:
     name: dhcpcd
     state: restarted
+  when: dns.changed == true
