@@ -1,6 +1,6 @@
 all:
   hosts:
-    pi:
+    raspberrypi-bkp:
       ansible_host: 192.168.178.46
       ansible_user: pi
 #      ansible_password: raspberry # only needed on first run
