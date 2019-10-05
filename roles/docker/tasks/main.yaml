@@ -20,9 +20,16 @@
 - name: Install Docker
   apt:
     force_apt_get: yes
-    name: docker-ce
+    name:
+      - docker-ce
+      - python3-setuptools
+      - python3-pip
     state: latest
     install_recommends: no
+
+- name: Install Docker SDK for python
+  pip:
+    name: docker
 
 - name: Add pi to docker group
   user:
