@@ -1,0 +1,14 @@
+- name: Hardening
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    validate: /usr/sbin/sshd -T -f %s
+    block: |
+      PermitRootLogin no
+      MaxAuthTries 3
+      MaxSessions 5
+      PasswordAuthentication no
+
+- name: Restart sshd
+  service:
+    name: sshd
+    state: restarted

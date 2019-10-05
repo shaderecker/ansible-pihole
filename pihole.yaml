@@ -1,0 +1,9 @@
+- name: Initialize pi
+  hosts: all
+  become: yes
+  roles:
+    - bootstrap
+    - updates
+    - sshd
+    - docker
+    - pihole

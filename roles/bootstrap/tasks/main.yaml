@@ -1,0 +1,107 @@
+- name: Create ssh directory
+  file:
+    path: /home/pi/.ssh
+    owner: pi
+    group: pi
+    state: directory
+    mode: 0700
+
+- name: Add ssh key
+  get_url:
+    url: https://github.com/thehadilp.keys
+    dest: /home/pi/.ssh/authorized_keys
+    owner: pi
+    group: pi
+    mode: 0600
+
+- name: Lock password for pi
+  user:
+    name: pi
+    password_lock: yes
+
+- name: bashrc for pi
+  blockinfile:
+    path: /home/pi/.bashrc
+    block: alias ll='ls -la'
+
+- name: bashrc for root
+  blockinfile:
+    path: /root/.bashrc
+    block: |
+      export LS_OPTIONS='--color=auto'
+      eval "`dircolors`"
+      alias ls='ls $LS_OPTIONS'
+      alias ll='ls $LS_OPTIONS -la'
+      alias l='ls $LS_OPTIONS -lA'
+
+      if ! shopt -oq posix; then
+        if [ -f /usr/share/bash-completion/bash_completion ]; then
+          . /usr/share/bash-completion/bash_completion
+        elif [ -f /etc/bash_completion ]; then
+          . /etc/bash_completion
+        fi
+      fi
+
+- name: Set LANG
+  lineinfile:
+    path: /etc/default/locale
+    regexp: "^LANG="
+    line: LANG=en_US.UTF-8
+
+- name: Set LC_ALL and LANGUAGE
+  blockinfile:
+    path: /etc/default/locale
+    block: |
+      LC_ALL=en_US.UTF-8
+      LANGUAGE=en_US.UTF-8
+
+- name: Disable en_GB
+  lineinfile:
+    path: /etc/locale.gen
+    regexp: "^en_GB.UTF-8 UTF-8"
+    line: "# en_GB.UTF-8 UTF-8"
+    backrefs: yes
+
+- name: Enable en_US
+  lineinfile:
+    path: /etc/locale.gen
+    regexp: "^# en_US.UTF-8 UTF-8"
+    line: en_US.UTF-8 UTF-8
+    backrefs: yes
+
+- name: Generate locale
+  command: locale-gen
+
+- name: Set timezone
+  lineinfile:
+    path: /etc/timezone
+    regexp: "^"
+    line: Europe/Berlin
+
+- name: Set localtime
+  file:
+    src: /usr/share/zoneinfo/Europe/Berlin
+    dest: /etc/localtime
+    state: link
+
+- name: Set hostname
+  lineinfile:
+    path: /etc/hostname
+    regexp: "^"
+    line: raspberrypi-bkp
+
+- name: Set hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: "^127.0.1.1"
+    line: 127.0.1.1       raspberrypi-bkp
+
+- name: Set custom DNS servers
+  blockinfile:
+    path: /etc/dhcpcd.conf
+    block: static domain_name_servers=1.1.1.1 8.8.8.8
+
+- name: Restart dhcpcd
+  service:
+    name: dhcpcd
+    state: restarted

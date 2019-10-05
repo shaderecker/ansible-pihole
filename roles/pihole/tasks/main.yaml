@@ -1,0 +1,10 @@
+- name: Create pihole directory
+  file:
+    path: /home/pi/pihole
+    owner: pi
+    group: pi
+    state: directory
+    mode: 0755
+
+- name: Install pihole
+  script: ../script/pihole-bkp.sh

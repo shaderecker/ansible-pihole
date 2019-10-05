@@ -1,0 +1,46 @@
+- name: Install dependencies
+  apt:
+    force_apt_get: yes
+    name:
+      - apt-transport-https
+      - gnupg2
+      - software-properties-common
+    state: latest
+
+- name: Add Docker apt key
+  apt_key:
+    url: https://download.docker.com/linux/raspbian/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+- name: Add Docker apt repository
+  apt_repository:
+    repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+    filename: docker
+
+- name: Install Docker
+  apt:
+    force_apt_get: yes
+    name: docker-ce
+    state: latest
+    install_recommends: no
+
+- name: Add pi to docker group
+  user:
+    name: pi
+    append: yes
+    groups: docker
+
+- name: Enable Docker IPv6
+  copy:
+    dest: /etc/docker/daemon.json
+    mode: 0600
+    content: |
+      {
+        "ipv6": true,
+        "fixed-cidr-v6": "2001:db8:1::/64"
+      }
+
+- name: Restart Docker
+  service:
+    name: docker
+    state: restarted
