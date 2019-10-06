@@ -44,3 +44,10 @@
   until: result.status == 200
   retries: 5
   delay: 10
+
+- name: ATTENTION!!!
+  debug:
+    msg:
+      - "Make sure to point your DNS server settings to this Pi-hole:"
+      - "DNSv4: {{ ansible_host }}"
+      - "DNSv6: {{ ipv6.stdout }}"
