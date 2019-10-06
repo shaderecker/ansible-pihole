@@ -20,7 +20,7 @@
       TZ: "Europe/Berlin"
       ServerIP: "{{ ansible_host }}"
       ServerIPv6: "{{ ipv6.stdout }}"
-      WEBPASSWORD: "Intranet"
+      WEBPASSWORD: "{{ pihole_webpassword }}"
       DNS1: "1.1.1.1"
       DNS2: "2606:4700:4700::1111"
       VIRTUAL_HOST: "{{ inventory_hostname }}"

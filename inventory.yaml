@@ -6,3 +6,4 @@ all:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
     ansible_python_interpreter: /usr/bin/python3
+    pihole_webpassword: Intranet
