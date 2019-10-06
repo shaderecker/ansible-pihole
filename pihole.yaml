@@ -1,6 +1,7 @@
 - name: Initialize pi
   hosts: all
   become: yes
+  serial: 1
   roles:
     - bootstrap
     - updates
