@@ -9,4 +9,4 @@ all:
     ansible_password: raspberry # only used on first run
     ansible_python_interpreter: /usr/bin/python3
     github_user_for_ssh_key: thehadilp
-    pihole_webpassword: Intranet
+    pihole_webpassword: Intranet # example value, change it and better use ansible-vault
