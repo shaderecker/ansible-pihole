@@ -45,6 +45,12 @@
   retries: 5
   delay: 10
 
+- name: Remove old image versions
+  docker_prune:
+    images: yes
+    images_filters:
+      dangling: false
+
 - name: ATTENTION!!!
   debug:
     msg:
