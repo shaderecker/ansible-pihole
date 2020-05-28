@@ -4,7 +4,6 @@
     name:
       - gnupg2
       - software-properties-common
-    state: latest
 
 - name: Add Docker apt key
   apt_key:
@@ -23,7 +22,6 @@
       - docker-ce
       - python3-setuptools
       - python3-pip
-    state: latest
     install_recommends: no
 
 - name: Install Docker SDK for python
