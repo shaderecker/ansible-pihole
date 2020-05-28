@@ -7,8 +7,10 @@
     mode: 0755
 
 - name: Get IPv6
-  shell: ifconfig | grep fd00 | cut -d" " -f10
-  register: ipv6
+  set_fact:
+    ipv6: "{{ item }}"
+  with_items: "{{ ansible_all_ipv6_addresses }}"
+  when: "item.startswith('fd00')"
 
 - name: Start/Update pihole container
   docker_container:
@@ -19,7 +21,7 @@
     env:
       TZ: "Europe/Berlin"
       ServerIP: "{{ ansible_host }}"
-      ServerIPv6: "{{ ipv6.stdout }}"
+      ServerIPv6: "{{ ipv6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       DNS1: "1.1.1.1"
       DNS2: "2606:4700:4700::1111"
@@ -56,4 +58,4 @@
     msg:
       - "Make sure to point your DNS server settings to this Pi-hole:"
       - "DNSv4: {{ ansible_host }}"
-      - "DNSv6: {{ ipv6.stdout }}"
+      - "DNSv6: {{ ipv6 }}"
