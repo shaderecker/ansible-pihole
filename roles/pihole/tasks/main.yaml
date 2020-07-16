@@ -16,7 +16,7 @@
   docker_container:
     name: pihole
     hostname: "{{ inventory_hostname }}"
-    image: pihole/pihole:v5.0-armhf
+    image: pihole/pihole:v5.1.1
     restart_policy: unless-stopped
     env:
       TZ: "Europe/Berlin"
