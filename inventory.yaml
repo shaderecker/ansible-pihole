@@ -1,8 +1,8 @@
 all:
   hosts:
-    raspberrypi:
+    pihole-1:
       ansible_host: 192.168.178.45
-    raspberrypi-bkp:
+    pihole-2:
       ansible_host: 192.168.178.46
   vars:
     ansible_user: pi
