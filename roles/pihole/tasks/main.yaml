@@ -6,6 +6,17 @@
     state: directory
     mode: 0755
 
+- name: Create 2nd pihole directory
+  file:
+    path: /home/pi/pihole/pihole
+    state: directory
+
+- name: Create FTL config
+  blockinfile:
+    path: /home/pi/pihole/pihole/pihole-FTL.conf
+    create: yes
+    block: MAXDBDAYS=180
+
 - name: Get IPv6
   set_fact:
     ipv6: "{{ item }}"
