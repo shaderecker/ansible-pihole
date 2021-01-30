@@ -1,0 +1,7 @@
+- name: Update pi
+  hosts: all
+  become: yes
+  serial: 1
+  roles:
+    - updates
+    - pihole
