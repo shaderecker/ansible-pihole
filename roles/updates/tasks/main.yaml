@@ -1,19 +1,7 @@
-- name: update
-  apt:
-    force_apt_get: yes
-    update_cache: yes
-
-- name: dist-upgrade
-  apt:
-    force_apt_get: yes
-    upgrade: dist
-
-- name: autoremove
-  apt:
-    force_apt_get: yes
-    autoremove: yes
-
-- name: autoclean
+- name: Update apt packages
   apt:
     force_apt_get: yes
     autoclean: yes
+    autoremove: yes
+    update_cache: yes
+    upgrade: dist
