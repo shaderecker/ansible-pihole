@@ -37,7 +37,7 @@
       DNS1: "1.1.1.1"
       DNS2: "2606:4700:4700::1111"
       VIRTUAL_HOST: "{{ inventory_hostname }}"
-      DNSMASQ_LISTENING: "local"
+      DNSMASQ_LISTENING: "all"
     dns_servers:
       - 127.0.0.1
       - 1.1.1.1
