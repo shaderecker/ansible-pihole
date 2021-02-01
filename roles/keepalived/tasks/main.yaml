@@ -1,0 +1,53 @@
+- name: Enable nonlocal IP binding
+  blockinfile:
+    path: /etc/sysctl.conf
+    block: net.ipv4.ip_nonlocal_bind = 1
+  register: sysctl
+
+- name: Reload sysctl config
+  command: sysctl -p
+  when: sysctl.changed == true
+
+- name: Update sources to bullseye
+  replace:
+    path: /etc/apt/sources.list
+    regexp: buster
+    replace: bullseye
+  register: sources
+
+- name: Upgrade to bullseye
+  apt:
+    force_apt_get: yes
+    autoclean: yes
+    autoremove: yes
+    update_cache: yes
+    upgrade: dist
+  when: sources.changed == true
+
+- name: Reboot
+  reboot:
+  when: sources.changed == true
+
+- name: Install keepalived
+  apt:
+    force_apt_get: yes
+    name: keepalived
+
+- name: Copy check_pihole.sh
+  copy:
+    dest: /etc/keepalived/check_pihole.sh
+    src: check_pihole.sh
+    mode: 0755
+  register: check_pihole
+
+- name: Configure keepalived
+  template:
+    dest: /etc/keepalived/keepalived.conf
+    src: keepalived.j2
+  register: keepalived_conf
+
+- name: Restart keepalived service
+  service:
+    name: keepalived
+    state: restarted
+  when: check_pihole.changed == true or keepalived_conf.changed == true

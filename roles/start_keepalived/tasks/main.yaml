@@ -1,0 +1,8 @@
+- name: Ensure keepalived service is started
+  service:
+    name: keepalived
+    state: started
+  register: result
+  failed_when:
+    - result.failed == true
+    - '"Could not find the requested service" not in result.msg'

@@ -1,0 +1,34 @@
+global_defs {
+    script_user {{ ansible_user }} docker
+    enable_script_security
+    max_auto_priority
+    vrrp_no_swap
+    checker_no_swap
+}
+
+vrrp_script check_pihole {
+    script "/etc/keepalived/check_pihole.sh"
+    interval 2
+    timeout 2
+    fall 1
+    rise 3
+}
+
+vrrp_instance PIHOLE {
+    interface wlan0
+    virtual_router_id 1
+    priority {{ priority }}
+    advert_int 1
+
+    unicast_peer {
+        {{ unicast_peer }}
+    }
+
+    virtual_ipaddress {
+        {{ pihole_vip }}
+    }
+
+    track_script {
+        check_pihole
+    }
+}

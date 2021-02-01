@@ -2,11 +2,17 @@ all:
   hosts:
     pihole-1:
       ansible_host: 192.168.178.45
+      priority: 100
+      unicast_peer: "{{ hostvars['pihole-2'].ansible_host }}"
     pihole-2:
       ansible_host: 192.168.178.46
+      priority: 101
+      unicast_peer: "{{ hostvars['pihole-1'].ansible_host }}"
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
     ansible_python_interpreter: /usr/bin/python3
     github_user_for_ssh_key: shaderecker
     pihole_webpassword: Intranet # example value, change it and better use ansible-vault
+    docker_release: buster
+    pihole_vip: 192.168.178.10/24
