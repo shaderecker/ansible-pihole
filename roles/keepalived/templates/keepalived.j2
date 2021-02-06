@@ -19,6 +19,7 @@ vrrp_instance PIHOLE {
     virtual_router_id 1
     priority {{ priority }}
     advert_int 1
+    nopreempt
 
     unicast_peer {
         {{ unicast_peer }}
