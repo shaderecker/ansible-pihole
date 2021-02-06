@@ -8,10 +8,10 @@ global_defs {
 
 vrrp_script check_pihole {
     script "/etc/keepalived/check_pihole.sh"
-    interval 2
-    timeout 2
+    interval 5
+    timeout 4
     fall 1
-    rise 3
+    rise 1
 }
 
 vrrp_instance PIHOLE {
