@@ -1,7 +1,9 @@
 - name: Enable nonlocal IP binding
   blockinfile:
     path: /etc/sysctl.conf
-    block: net.ipv4.ip_nonlocal_bind = 1
+    block: |
+      net.ipv4.ip_nonlocal_bind = 1
+      net.ipv6.ip_nonlocal_bind = 1
   register: sysctl
 
 - name: Reload sysctl config
