@@ -21,10 +21,6 @@ vrrp_instance PIHOLE {
     advert_int 1
     nopreempt
 
-    unicast_peer {
-        {{ unicast_peer }}
-    }
-
     virtual_ipaddress {
         {{ pihole_vip }}
     }
