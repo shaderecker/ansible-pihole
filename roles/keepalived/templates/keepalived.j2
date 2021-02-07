@@ -14,7 +14,18 @@ vrrp_script check_pihole {
     rise 1
 }
 
-vrrp_instance PIHOLE {
+vrrp_sync_group PIHOLE {
+    group {
+        PIHOLE-IPv4
+        PIHOLE-IPv6
+    }
+
+    track_script {
+        check_pihole
+    }
+}
+
+vrrp_instance PIHOLE-IPv4 {
     interface wlan0
     virtual_router_id 1
     priority {{ priority }}
@@ -24,8 +35,16 @@ vrrp_instance PIHOLE {
     virtual_ipaddress {
         {{ pihole_vip_ipv4 }}
     }
+}
 
-    track_script {
-        check_pihole
+vrrp_instance PIHOLE-IPv6 {
+    interface wlan0
+    virtual_router_id 1
+    priority {{ priority }}
+    advert_int 1
+    nopreempt
+
+    virtual_ipaddress {
+        {{ pihole_vip_ipv6 }}
     }
 }
