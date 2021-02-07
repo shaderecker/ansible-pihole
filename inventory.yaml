@@ -13,4 +13,4 @@ all:
     github_user_for_ssh_key: shaderecker
     pihole_webpassword: Intranet # example value, change it and better use ansible-vault
     docker_release: buster
-    pihole_vip: 192.168.178.10/24
+    pihole_vip_ipv4: 192.168.178.10/24

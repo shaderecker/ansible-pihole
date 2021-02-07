@@ -22,7 +22,7 @@ vrrp_instance PIHOLE {
     nopreempt
 
     virtual_ipaddress {
-        {{ pihole_vip }}
+        {{ pihole_vip_ipv4 }}
     }
 
     track_script {
