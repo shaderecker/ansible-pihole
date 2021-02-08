@@ -15,7 +15,7 @@
   blockinfile:
     path: /home/pi/pihole/pihole/pihole-FTL.conf
     create: yes
-    block: MAXDBDAYS=180
+    block: MAXDBDAYS={{ pihole_ftl_max_db_days }}
 
 - name: Get IPv6
   set_fact:
