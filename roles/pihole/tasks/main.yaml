@@ -27,16 +27,20 @@
   docker_container:
     name: pihole
     hostname: "{{ inventory_hostname }}"
-    image: pihole/pihole:v5.6-armhf-buster
+    image: "{{ pihole_image }}"
     restart_policy: unless-stopped
     env:
-      TZ: "Europe/Berlin"
+      TZ: "{{ pihole_tz }}"
       ServerIP: "{{ ansible_host }}"
       ServerIPv6: "{{ ipv6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
-      PIHOLE_DNS_: "1.1.1.1;2606:4700:4700::1111"
+      PIHOLE_DNS_: "{{ pihole_dns }}"
       VIRTUAL_HOST: "{{ inventory_hostname }}"
       DNSMASQ_LISTENING: "all"
+      REV_SERVER: "{{ pihole_rev_server }}"
+      REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
+      REV_SERVER_TARGET: "{{ pihole_rev_server_target }}"
+      REV_SERVER_CIDR: "{{ pihole_rev_server_cidr }}"
     dns_servers:
       - 127.0.0.1
       - 1.1.1.1
