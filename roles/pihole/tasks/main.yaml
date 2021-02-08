@@ -30,7 +30,7 @@
     image: "{{ pihole_image }}"
     restart_policy: unless-stopped
     env:
-      TZ: "{{ pihole_tz }}"
+      TZ: "{{ timezone }}"
       ServerIP: "{{ ansible_host }}"
       ServerIPv6: "{{ ipv6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
