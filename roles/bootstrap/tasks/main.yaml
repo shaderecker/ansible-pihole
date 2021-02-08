@@ -108,7 +108,7 @@
 - name: Set custom DNS servers
   blockinfile:
     path: /etc/dhcpcd.conf
-    block: static domain_name_servers=1.1.1.1 8.8.8.8
+    block: static domain_name_servers={{ static_dns }}
   register: dns
 
 - name: Restart dhcpcd

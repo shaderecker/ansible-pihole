@@ -43,7 +43,7 @@
       REV_SERVER_CIDR: "{{ pihole_rev_server_cidr }}"
     dns_servers:
       - 127.0.0.1
-      - 1.1.1.1
+      - "{{ static_dns }}"
     published_ports:
       - "0.0.0.0:53:53/tcp"
       - "0.0.0.0:53:53/udp"
