@@ -6,3 +6,8 @@
   failed_when:
     - result.failed == true
     - '"Could not find the requested service" not in result.msg'
+
+- name: Regather IP addresses after VIP removal
+  setup:
+    gather_subset: network
+  when: result.changed == true
