@@ -76,3 +76,7 @@
       - "Make sure to point your DNS server settings to this Pi-hole:"
       - "DNSv4: {{ ansible_host }}"
       - "DNSv6: {{ ipv6 }}"
+      - ""
+      - "In the HA setup with keepalived, these are your settings:"
+      - "DNSv4: {{ pihole_vip_ipv4 }}"
+      - "DNSv6: {{ pihole_vip_ipv6 }}"
