@@ -34,8 +34,7 @@
       ServerIP: "{{ ansible_host }}"
       ServerIPv6: "{{ ipv6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
-      DNS1: "1.1.1.1"
-      DNS2: "2606:4700:4700::1111"
+      PIHOLE_DNS_: "1.1.1.1;2606:4700:4700::1111"
       VIRTUAL_HOST: "{{ inventory_hostname }}"
       DNSMASQ_LISTENING: "all"
     dns_servers:
