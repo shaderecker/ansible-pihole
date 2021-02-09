@@ -75,5 +75,5 @@
       - "DNSv6: {{ ipv6 }}"
       - ""
       - "In the HA setup with keepalived, these are your settings:"
-      - "DNSv4: {{ pihole_vip_ipv4 }}"
-      - "DNSv6: {{ pihole_vip_ipv6 }}"
+      - "DNSv4: {{ pihole_vip_ipv4.split('/')[0] }}"
+      - "DNSv6: {{ pihole_vip_ipv6.split('/')[0] }}"
