@@ -31,8 +31,8 @@
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
-      ServerIP: "{{ ansible_host }}"
-      ServerIPv6: "{{ ipv6 }}"
+      ServerIP: "0.0.0.0"
+      ServerIPv6: "::"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
       VIRTUAL_HOST: "{{ inventory_hostname }}"
@@ -44,13 +44,7 @@
     dns_servers:
       - 127.0.0.1
       - "{{ static_dns }}"
-    published_ports:
-      - "0.0.0.0:53:53/tcp"
-      - "0.0.0.0:53:53/udp"
-      - "0.0.0.0:80:80"
-      - "[::]:53:53/tcp"
-      - "[::]:53:53/udp"
-      - "[::]:80:80"
+    network_mode: host
     volumes:
       - /home/pi/pihole/pihole/:/etc/pihole/
       - /home/pi/pihole/dnsmasq.d/:/etc/dnsmasq.d/
