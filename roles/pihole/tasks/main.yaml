@@ -26,7 +26,6 @@
 - name: Start/Update pihole container
   docker_container:
     name: pihole
-    hostname: "{{ inventory_hostname }}"
     image: "{{ pihole_image }}"
     restart_policy: unless-stopped
     env:
