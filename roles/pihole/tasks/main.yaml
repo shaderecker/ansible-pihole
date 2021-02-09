@@ -34,7 +34,6 @@
       ServerIPv6: "::"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
-      VIRTUAL_HOST: "{{ inventory_hostname }}"
       DNSMASQ_LISTENING: "all"
       REV_SERVER: "{{ pihole_rev_server }}"
       REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
