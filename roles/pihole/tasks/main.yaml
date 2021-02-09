@@ -31,7 +31,7 @@
     env:
       TZ: "{{ timezone }}"
       ServerIP: "0.0.0.0"
-      ServerIPv6: "::"
+      ServerIPv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
       DNSMASQ_LISTENING: "all"
