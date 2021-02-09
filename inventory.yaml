@@ -2,10 +2,10 @@ all:
   hosts:
     pihole-1:
       ansible_host: 192.168.178.45
-      priority: 100
+      priority: 101
     pihole-2:
       ansible_host: 192.168.178.46
-      priority: 101
+      priority: 100
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
