@@ -30,7 +30,7 @@ vrrp_instance PIHOLE-IPv4 {
     virtual_router_id 1
     priority {{ priority }}
     advert_int 1
-    nopreempt
+    preempt_delay 900
 
     virtual_ipaddress {
         {{ pihole_vip_ipv4 }}
@@ -42,7 +42,7 @@ vrrp_instance PIHOLE-IPv6 {
     virtual_router_id 1
     priority {{ priority }}
     advert_int 1
-    nopreempt
+    preempt_delay 900
 
     virtual_ipaddress {
         {{ pihole_vip_ipv6 }}
