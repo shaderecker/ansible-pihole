@@ -17,11 +17,13 @@
     create: yes
     block: MAXDBDAYS={{ pihole_ftl_max_db_days }}
 
-- name: Get IPv6
+- name: Get IPv6 link local address
   set_fact:
-    ipv6: "{{ item }}"
-  with_items: "{{ ansible_all_ipv6_addresses }}"
-  when: "item.startswith('fd00')"
+    ipv6: "{{ item.address }}"
+  loop: "{{ vars['ansible_' + ansible_default_ipv6.interface].ipv6 }}"
+  loop_control:
+    label: "{{ item.address }}"
+  when: "'link' in item.scope"
 
 - name: Start/Update pihole container
   docker_container:
@@ -31,7 +33,7 @@
     env:
       TZ: "{{ timezone }}"
       ServerIP: "0.0.0.0"
-      ServerIPv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
+      ServerIPv6: "{{ ipv6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
       DNSMASQ_LISTENING: "all"
