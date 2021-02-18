@@ -1,0 +1,7 @@
+- name: Copy sync script
+  template:
+    dest: /home/pi/pihole_sync.sh
+    src: pihole_sync.j2
+    owner: pi
+    group: pi
+    mode: 0755
