@@ -5,3 +5,18 @@
     owner: pi
     group: pi
     mode: 0755
+
+- name: Generate ssh keypair
+  community.crypto.openssh_keypair:
+    comment: pihole-sync-{{ inventory_hostname }}
+    owner: pi
+    group: pi
+    mode: 0600
+    path: /home/pi/.ssh/id_rsa_sync
+  register: ssh_key
+
+- name: Add key to authorized_keys on sync target
+  ansible.posix.authorized_key:
+    key: "{{ ssh_key.public_key }}"
+    user: pi
+  delegate_to: "{{ sync_target }}"
