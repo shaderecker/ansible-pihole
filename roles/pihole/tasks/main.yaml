@@ -1,19 +1,19 @@
 - name: Create pihole directory
   file:
-    path: /home/pi/pihole
-    owner: pi
-    group: pi
+    path: "/home/{{ ansible_user }}/pihole"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     state: directory
     mode: 0755
 
 - name: Create 2nd pihole directory
   file:
-    path: /home/pi/pihole/pihole
+    path: "/home/{{ ansible_user }}/pihole/pihole"
     state: directory
 
 - name: Create FTL config
   blockinfile:
-    path: /home/pi/pihole/pihole/pihole-FTL.conf
+    path: "/home/{{ ansible_user }}/pihole/pihole/pihole-FTL.conf"
     create: yes
     block: MAXDBDAYS={{ pihole_ftl_max_db_days }}
 
@@ -46,8 +46,8 @@
       - "{{ static_dns }}"
     network_mode: host
     volumes:
-      - /home/pi/pihole/pihole/:/etc/pihole/
-      - /home/pi/pihole/dnsmasq.d/:/etc/dnsmasq.d/
+      - "/home/{{ ansible_user }}/pihole/pihole/:/etc/pihole/"
+      - "/home/{{ ansible_user }}/pihole/dnsmasq.d/:/etc/dnsmasq.d/"
     log_driver: json-file
     log_options:
       max-size: "10m"
