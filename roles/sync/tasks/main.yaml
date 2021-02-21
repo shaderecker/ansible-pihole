@@ -1,11 +1,3 @@
-- name: Copy sync script
-  template:
-    dest: /home/pi/pihole_sync.sh
-    src: pihole_sync.j2
-    owner: pi
-    group: pi
-    mode: 0755
-
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
     comment: pihole-sync-{{ inventory_hostname }}
@@ -28,3 +20,11 @@
     name: "{{ ansible_host }}"
     path: /home/pi/.ssh/known_hosts
   delegate_to: "{{ sync_target }}"
+
+- name: Copy sync script
+  template:
+    dest: /home/pi/pihole_sync.sh
+    src: pihole_sync.j2
+    owner: pi
+    group: pi
+    mode: 0755

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ $(ip a | grep {{ pihole_vip_ipv4.split('/')[0] }}) ]]; then
-  scp /home/pi/pihole/pihole/gravity.db pi@{{ sync_target }}:/home/pi/pihole/pihole
-  scp /home/pi/pihole/pihole/custom.list pi@{{ sync_target }}:/home/pi
-  ssh pi@{{ sync_target }} sudo mv /home/pi/custom.list /home/pi/pihole/pihole
-  ssh pi@{{ sync_target }} docker restart pihole
+  scp -i {{ ssh_key.filename }} /home/pi/pihole/pihole/gravity.db pi@{{ sync_target }}:/home/pi/pihole/pihole
+  scp -i {{ ssh_key.filename }} /home/pi/pihole/pihole/custom.list pi@{{ sync_target }}:/home/pi
+  ssh -i {{ ssh_key.filename }} pi@{{ sync_target }} sudo mv /home/pi/custom.list /home/pi/pihole/pihole
+  ssh -i {{ ssh_key.filename }} pi@{{ sync_target }} docker restart pihole
 fi
