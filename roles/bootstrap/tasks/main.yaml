@@ -4,19 +4,19 @@
     user: "{{ ansible_user }}"
     comment: "github-{{ github_user_for_ssh_key }}"
 
-- name: Lock password for pi
+- name: Lock password for {{ ansible_user }}
   user:
-    name: pi
+    name: "{{ ansible_user }}"
     password_lock: yes
 
-- name: bashrc for pi
+- name: bashrc for {{ ansible_user }}
   blockinfile:
-    path: /home/pi/.bashrc
+    path: "/home/{{ ansible_user }}/.bashrc"
     block: alias ll='ls -la'
 
 - name: bashrc for root
   blockinfile:
-    path: /root/.bashrc
+    path: "{{ ansible_user_dir }}/.bashrc"
     block: |
       export LS_OPTIONS='--color=auto'
       eval "`dircolors`"
