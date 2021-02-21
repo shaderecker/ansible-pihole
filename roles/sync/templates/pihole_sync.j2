@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ $(ip a | grep {{ pihole_vip_ipv4.split('/')[0] }}) ]]; then
-  scp -o StrictHostKeyChecking=no /home/pi/pihole/pihole/gravity.db pi@{{ sync_target }}:/home/pi/pihole/pihole
-  scp -o StrictHostKeyChecking=no /home/pi/pihole/pihole/custom.list pi@{{ sync_target }}:/home/pi
-  ssh -o StrictHostKeyChecking=no pi@{{ sync_target }} sudo mv /home/pi/custom.list /home/pi/pihole/pihole
-  ssh -o StrictHostKeyChecking=no pi@{{ sync_target }} docker restart pihole
+  scp /home/pi/pihole/pihole/gravity.db pi@{{ sync_target }}:/home/pi/pihole/pihole
+  scp /home/pi/pihole/pihole/custom.list pi@{{ sync_target }}:/home/pi
+  ssh pi@{{ sync_target }} sudo mv /home/pi/custom.list /home/pi/pihole/pihole
+  ssh pi@{{ sync_target }} docker restart pihole
 fi
