@@ -1,18 +1,8 @@
-- name: Create ssh directory
-  file:
-    path: /home/pi/.ssh
-    owner: pi
-    group: pi
-    state: directory
-    mode: 0700
-
 - name: Add ssh key
-  get_url:
-    url: https://github.com/{{ github_user_for_ssh_key }}.keys
-    dest: /home/pi/.ssh/authorized_keys
-    owner: pi
-    group: pi
-    mode: 0600
+  ansible.posix.authorized_key:
+    key: https://github.com/{{ github_user_for_ssh_key }}.keys
+    user: "{{ ansible_user }}"
+    comment: "github-{{ github_user_for_ssh_key }}"
 
 - name: Lock password for pi
   user:
