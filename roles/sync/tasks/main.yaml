@@ -28,3 +28,10 @@
     owner: pi
     group: pi
     mode: 0755
+
+- name: Schedule sync with cron
+  ansible.builtin.cron:
+    hour: "2,14"
+    minute: "0"
+    job: /home/pi/pihole_sync.sh
+    name: pihole-sync
