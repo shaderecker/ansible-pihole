@@ -1,8 +1,25 @@
 #!/bin/bash
 
+DOCKER_RESTART=0
+
 if [[ $(ip a | grep {{ pihole_vip_ipv4.split('/')[0] }}) ]]; then
-  scp -i {{ ssh_key.filename }} {{ ansible_user_dir }}/pihole/pihole/gravity.db {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }}/pihole/pihole
-  scp -i {{ ssh_key.filename }} {{ ansible_user_dir }}/pihole/pihole/custom.list {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }}
-  ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} sudo mv {{ ansible_user_dir }}/custom.list {{ ansible_user_dir }}/pihole/pihole
-  ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} docker restart pihole
+  RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh -i {{ ssh_key.filename }}" {{ ansible_user_dir }}/pihole/pihole/gravity.db {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }})
+  if [ $? -eq 0 ]; then
+    if [ -n "$RSYNC_GRAVITY" ]; then
+      ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} cp {{ ansible_user_dir }}/gravity.db {{ ansible_user_dir }}/pihole/pihole
+      DOCKER_RESTART=1
+    fi
+  fi
+
+  RSYNC_DNS=$(rsync -a --info=name -e "ssh -i {{ ssh_key.filename }}" {{ ansible_user_dir }}/pihole/pihole/custom.list {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }})
+  if [ $? -eq 0 ]; then
+    if [ -n "$RSYNC_DNS" ]; then
+      ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} sudo cp {{ ansible_user_dir }}/custom.list {{ ansible_user_dir }}/pihole/pihole
+      DOCKER_RESTART=1
+    fi
+  fi
+
+  if [ $DOCKER_RESTART -eq 1 ]; then
+    ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} docker restart pihole
+  fi
 fi
