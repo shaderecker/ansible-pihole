@@ -1,16 +1,13 @@
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
     comment: pihole-sync-{{ inventory_hostname }}
-    owner: pi
-    group: pi
-    mode: 0600
-    path: /home/pi/.ssh/id_rsa_sync
+    path: .ssh/id_rsa_sync
   register: ssh_key
 
 - name: Add key to authorized_keys on sync target
   ansible.posix.authorized_key:
     key: "{{ ssh_key.public_key }}"
-    user: pi
+    user: "{{ ansible_user }}"
   delegate_to: "{{ sync_target }}"
 
 - name: Add sync target to known_hosts
@@ -18,20 +15,17 @@
     hash_host: yes
     key: "{{ ansible_host }} {{ ansible_ssh_host_key_ecdsa_public_keytype }} {{ ansible_ssh_host_key_ecdsa_public }}"
     name: "{{ ansible_host }}"
-    path: /home/pi/.ssh/known_hosts
   delegate_to: "{{ sync_target }}"
 
 - name: Copy sync script
   template:
-    dest: /home/pi/pihole_sync.sh
+    dest: pihole_sync.sh
     src: pihole_sync.j2
-    owner: pi
-    group: pi
     mode: 0755
 
 - name: Schedule sync with cron
   ansible.builtin.cron:
     hour: "2,14"
     minute: "0"
-    job: /home/pi/pihole_sync.sh
+    job: "{{ ansible_user_dir }}/pihole_sync.sh"
     name: pihole-sync
