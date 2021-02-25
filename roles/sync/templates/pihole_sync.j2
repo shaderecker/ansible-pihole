@@ -19,6 +19,14 @@ if [[ $(ip a | grep {{ pihole_vip_ipv4.split('/')[0] }}) ]]; then
     fi
   fi
 
+  RSYNC_CNAME=$(rsync -a --info=name -e "ssh -i {{ ssh_key.filename }}" {{ ansible_user_dir }}/pihole/dnsmasq.d/05-pihole-custom-cname.conf {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }})
+  if [ $? -eq 0 ]; then
+    if [ -n "$RSYNC_CNAME" ]; then
+      ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} sudo cp {{ ansible_user_dir }}/05-pihole-custom-cname.conf {{ ansible_user_dir }}/pihole/dnsmasq.d
+      DOCKER_RESTART=1
+    fi
+  fi
+
   if [ $DOCKER_RESTART -eq 1 ]; then
     ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} docker restart pihole
   fi
