@@ -2,30 +2,36 @@
 
 DOCKER_RESTART=0
 
-if [[ $(ip a | grep {{ pihole_vip_ipv4.split('/')[0] }}) ]]; then
-  RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh -i {{ ssh_key.filename }}" {{ ansible_user_dir }}/pihole/pihole/gravity.db {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }})
+key="-i {{ ansible_user_dir }}/{{ ssh_key.filename }}"
+host_key_check="-o StrictHostKeyChecking=no"
+target="{{ ansible_user }}@{{ sync_target }}"
+sync_dir="{{ ansible_user_dir }}/{{ sync_dir.path }}"
+pihole_dir="{{ ansible_user_dir }}/pihole"
+
+if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
+  RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/gravity.db $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_GRAVITY" ]; then
-      ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} cp {{ ansible_user_dir }}/gravity.db {{ ansible_user_dir }}/pihole/pihole
+      cp $sync_dir/gravity.db $pihole_dir/pihole
       DOCKER_RESTART=1
     fi
   fi
 
-  RSYNC_DNS=$(rsync -a --info=name -e "ssh -i {{ ssh_key.filename }}" {{ ansible_user_dir }}/pihole/pihole/custom.list {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }})
+  RSYNC_DNS=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/custom.list $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_DNS" ]; then
-      ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} sudo cp {{ ansible_user_dir }}/custom.list {{ ansible_user_dir }}/pihole/pihole
+      sudo cp $sync_dir/custom.list $pihole_dir/pihole
     fi
   fi
 
-  RSYNC_CNAME=$(rsync -a --info=name -e "ssh -i {{ ssh_key.filename }}" {{ ansible_user_dir }}/pihole/dnsmasq.d/05-pihole-custom-cname.conf {{ ansible_user }}@{{ sync_target }}:{{ ansible_user_dir }})
+  RSYNC_CNAME=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/dnsmasq.d/05-pihole-custom-cname.conf $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_CNAME" ]; then
-      ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} sudo cp {{ ansible_user_dir }}/05-pihole-custom-cname.conf {{ ansible_user_dir }}/pihole/dnsmasq.d
+      sudo cp $sync_dir/05-pihole-custom-cname.conf $pihole_dir/dnsmasq.d
     fi
   fi
 
   if [ $DOCKER_RESTART -eq 1 ]; then
-    ssh -i {{ ssh_key.filename }} {{ ansible_user }}@{{ sync_target }} docker restart pihole
+    docker restart pihole
   fi
 fi

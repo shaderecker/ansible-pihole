@@ -3,11 +3,9 @@ all:
     pihole-1:
       ansible_host: 192.168.178.45
       priority: 101
-      sync_target: "{{ hostvars['pihole-2'].ansible_host }}"
     pihole-2:
       ansible_host: 192.168.178.46
       priority: 100
-      sync_target: "{{ hostvars['pihole-1'].ansible_host }}"
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
@@ -26,3 +24,4 @@ all:
     pihole_rev_server_cidr: "192.168.178.0/24"
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
+    sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"

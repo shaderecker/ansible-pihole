@@ -4,22 +4,22 @@
     path: .ssh/id_rsa_sync
   register: ssh_key
 
-- name: Add key to authorized_keys on sync target
+- name: Add key to authorized_keys on all other nodes
   ansible.posix.authorized_key:
     key: "{{ ssh_key.public_key }}"
     user: "{{ ansible_user }}"
-  delegate_to: "{{ sync_target }}"
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all']|difference([inventory_hostname]) }}"
 
-- name: Add sync target to known_hosts
-  ansible.builtin.known_hosts:
-    hash_host: yes
-    key: "{{ ansible_host }} {{ ansible_ssh_host_key_ecdsa_public_keytype }} {{ ansible_ssh_host_key_ecdsa_public }}"
-    name: "{{ ansible_host }}"
-  delegate_to: "{{ sync_target }}"
+- name: Create sync folder
+  file:
+    path: pihole_sync
+    state: directory
+  register: sync_dir
 
 - name: Copy sync script
   template:
-    dest: pihole_sync.sh
+    dest: "{{ sync_dir.path }}/pihole_sync.sh"
     src: pihole_sync.j2
     mode: 0755
 
@@ -27,5 +27,5 @@
   ansible.builtin.cron:
     hour: "2,14"
     minute: "0"
-    job: "{{ ansible_user_dir }}/pihole_sync.sh"
+    job: "{{ ansible_user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
     name: pihole-sync
