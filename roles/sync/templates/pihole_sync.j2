@@ -12,7 +12,7 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
   RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/gravity.db $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_GRAVITY" ]; then
-      cp $sync_dir/gravity.db $pihole_dir/pihole
+      sudo cp --preserve=timestamps $sync_dir/gravity.db $pihole_dir/pihole
       DOCKER_RESTART=1
     fi
   fi
@@ -20,14 +20,14 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
   RSYNC_DNS=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/custom.list $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_DNS" ]; then
-      sudo cp $sync_dir/custom.list $pihole_dir/pihole
+      sudo cp --preserve=timestamps $sync_dir/custom.list $pihole_dir/pihole
     fi
   fi
 
   RSYNC_CNAME=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/dnsmasq.d/05-pihole-custom-cname.conf $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_CNAME" ]; then
-      sudo cp $sync_dir/05-pihole-custom-cname.conf $pihole_dir/dnsmasq.d
+      sudo cp --preserve=timestamps $sync_dir/05-pihole-custom-cname.conf $pihole_dir/dnsmasq.d
     fi
   fi
 
