@@ -20,20 +20,20 @@ This playbook is for the first time run (but it can be rerun any time).
 It will bootstrap a fresh Raspberry Pi OS installation, install Docker, and Pi-hole.  
 These roles are included:
 - [`bootstrap`](roles/bootstrap/tasks/main.yaml): Some basic configuration  
-  - Add the ssh key fetched from your GitHub user, configured in [`github_user_for_ssh_key`](inventory.yaml#L15) (Alternatively you can also set your ssh key directly [here](roles/bootstrap/tasks/main.yaml#L3))
+  - Add the ssh key fetched from your GitHub user, configured in [`github_user_for_ssh_key`](inventory.yaml#L13) (Alternatively you can also set your ssh key directly [here](roles/bootstrap/tasks/main.yaml#L3))
   - Lock the password to prevent local terminal login
   - Set some useful bash aliases
   - Set language to en_US
-  - Set timezone, configured in [`timezone`](inventory.yaml#L16)
+  - Set timezone, configured in [`timezone`](inventory.yaml#L14)
   - Set hostname to the respective Ansible inventory_hostname
-  - Set a static DNS server, configured in [`static_dns`](inventory.yaml#L17)
+  - Set a static DNS server, configured in [`static_dns`](inventory.yaml#L15)
 - [`updates`](roles/updates/tasks/main.yaml): Update apt packages
 - [`sshd`](roles/sshd/tasks/main.yaml): Harden the sshd config  
   - Disable root login
   - Disable password authentication
 - [`docker`](roles/docker/tasks/main.yaml): Install and configure Docker
 - [`pihole`](roles/pihole/tasks/main.yaml): Start/Update Pi-hole container
-  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L19-L26)
+  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L24)
 
 ## `update-pihole.yaml`
 This playbook is for subsequent runs after the `bootstrap-pihole.yaml` playbook was run at least once.  
@@ -51,13 +51,13 @@ Motivation:
 Since the version of keepalived and its dependencies in the Raspberry Pi OS buster sources is heavily outdated (and has some nasty bugs), the playbook will upgrade the system to Raspberry Pi OS bullseye which includes a more recent keepalived version.  
 As healthcheck, the status of the Pi-hole docker container is evaluated.  
 Communication happens over VRRP (Virtual Router Redundancy Protocol) which uses Multicast.  
-The priority of each Pi-hole can be configured in `inventory.yaml`, for example:
+The priority of each Pi-hole can be configured in [`inventory.yaml`](inventory.yaml), for example:
 ```
     pihole-1:
       ansible_host: 192.168.178.45
       priority: 101
 ```
-The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L27-L28):
+The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L25-L26):
 ```
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
@@ -66,8 +66,8 @@ The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventor
 When maintaining and updating your Pi-hole instances with the `bootstrap-pihole.yaml` and `update-pihole.yaml` playbooks, the first step stops keepalived and therefore shifts the VIP to another instance so that the performance of DNS queries is not impeded.
 
 ## `sync.yaml`
-This playbook enables the synchronisation of settings between two Pi-hole instances.  
-One Pi-hole functions as the primary instance and the other as secondary.  
+This playbook enables the synchronisation of settings between multiple Pi-hole instances.  
+One Pi-hole functions as the primary instance and the others as secondaries which pull from the primary.  
 Syncing is scheduled as a cronjob and set to run two times per day (frequency can be changed [here](roles/sync/tasks/main.yaml#L28)).  
 What gets synced:
 - `gravity.db` (Adlists, Domains, Clients, Groups, Group Assignments of all aforementioned items)
@@ -75,7 +75,16 @@ What gets synced:
 - `05-pihole-custom-cname.conf` (Local CNAME Records)
 
 If you enabled HA (high availability) with the `keepalived.yaml` playbook, the primary instance will be the one currently occupying the Virtual IP address (evaluated at each cronjob run).  
-Otherwise you can set the `pihole_vip_ipv4` variable in `inventory.yaml` to the IP address of your primary Pi-hole instance, so that the sync condition is fulfilled.
+Otherwise you can set the [`sync_target`](inventory.yaml#L27) variable to the IP address of your primary Pi-hole instance.
+
+Default: Pull from VIP
+```
+sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
+```
+Alternative: Pull from primary instance (assuming your primary is `pihole-1`, otherwise adapt)
+```
+sync_target: "{{ hostvars['pihole-1'].ansible_host }}"
+```
 
 For syncing, `rsync` is used which will only transfer files if they contain changes.  
 Changes to `gravity.db` will trigger a docker container restart to pick up the changes.  
