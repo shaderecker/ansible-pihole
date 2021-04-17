@@ -1,7 +1,5 @@
 #!/bin/bash
 
-DOCKER_RESTART=0
-
 key="-i {{ ansible_user_dir }}/{{ ssh_key.filename }}"
 host_key_check="-o StrictHostKeyChecking=no"
 target="{{ ansible_user }}@{{ sync_target }}"
@@ -12,8 +10,9 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
   RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/gravity.db $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_GRAVITY" ]; then
+      docker stop pihole
       sudo cp --preserve=timestamps $sync_dir/gravity.db $pihole_dir/pihole
-      DOCKER_RESTART=1
+      docker start pihole
     fi
   fi
 
@@ -29,9 +28,5 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
     if [ -n "$RSYNC_CNAME" ]; then
       sudo cp --preserve=timestamps $sync_dir/05-pihole-custom-cname.conf $pihole_dir/dnsmasq.d
     fi
-  fi
-
-  if [ $DOCKER_RESTART -eq 1 ]; then
-    docker restart pihole
   fi
 fi
