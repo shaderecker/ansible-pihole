@@ -14,7 +14,7 @@ all:
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
     docker_release: buster
-    pihole_image: "pihole/pihole:v5.7-armhf-buster"
+    pihole_image: "pihole/pihole:v5.8-armhf-buster"
     pihole_ftl_max_db_days: "180"
     pihole_webpassword: Intranet # example value, change it and better use ansible-vault
     pihole_dns: "1.1.1.1;2606:4700:4700::1111"
