@@ -52,13 +52,13 @@ Since the version of keepalived and its dependencies in the Raspberry Pi OS bust
 As healthcheck, the status of the Pi-hole docker container is evaluated.  
 Communication happens over VRRP (Virtual Router Redundancy Protocol) which uses Multicast.  
 The priority of each Pi-hole can be configured in [`inventory.yaml`](inventory.yaml), for example:
-```
+```yaml
     pihole-1:
       ansible_host: 192.168.178.45
       priority: 101
 ```
 The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L25-L26):
-```
+```yaml
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
 ```
@@ -78,11 +78,11 @@ If you enabled HA (high availability) with the `keepalived.yaml` playbook, the p
 Otherwise you can set the [`sync_target`](inventory.yaml#L27) variable to the IP address of your primary Pi-hole instance.
 
 Default: Pull from VIP
-```
+```yaml
 sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
 ```
 Alternative: Pull from primary instance (assuming your primary is `pihole-1`, otherwise adapt)
-```
+```yaml
 sync_target: "{{ hostvars['pihole-1'].ansible_host }}"
 ```
 
