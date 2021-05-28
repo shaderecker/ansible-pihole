@@ -6,7 +6,7 @@ Optionally you can enable HA (high availability) with keepalived and sync settin
 The repository contains four Ansible Playbooks. Each one is described here shortly.
 
 ## Base Setup
-- An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html)
+- An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.10 or later)
 - One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit)
 - Headless setup (configuration before first boot):
   - Enable [SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md) `"3. Enable SSH on a headless Raspberry Pi..."`
