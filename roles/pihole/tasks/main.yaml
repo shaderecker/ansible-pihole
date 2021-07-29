@@ -20,7 +20,7 @@
 - name: Get IPv6 link local address
   set_fact:
     ipv6: "{{ item.address }}"
-  loop: "{{ vars['ansible_' + ansible_default_ipv6.interface].ipv6 }}"
+  loop: "{{ vars['ansible_' + pihole_bind_interface].ipv6 }}"
   loop_control:
     label: "{{ item.address }}"
   when: "'link' in item.scope"
