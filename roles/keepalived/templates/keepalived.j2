@@ -38,7 +38,7 @@ vrrp_instance PIHOLE-IPv4 {
 }
 
 vrrp_instance PIHOLE-IPv6 {
-    interface {{ ansible_default_ipv6.interface }}
+    interface {{ ansible_default_ipv6.interface | default(ansible_default_ipv4.interface) }}
     virtual_router_id 1
     priority {{ priority }}
     advert_int 1
