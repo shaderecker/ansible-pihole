@@ -6,12 +6,18 @@ target="{{ ansible_user }}@{{ sync_target }}"
 sync_dir="{{ ansible_user_dir }}/{{ sync_dir.path }}"
 pihole_dir="{{ ansible_user_dir }}/pihole"
 
+if [[ $(ip a | grep {{ sync_target }}) ]]; then
+  nice -n 19 sqlite3 $pihole_dir/pihole/gravity.db ".backup $sync_dir/gravity.dump"
+fi
+
 if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
-  RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/gravity.db $sync_dir)
+  sleep 60
+
+  RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$sync_dir/gravity.dump $sync_dir)
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_GRAVITY" ]; then
       docker stop pihole
-      sudo cp --preserve=timestamps $sync_dir/gravity.db $pihole_dir/pihole
+      sudo sqlite3 $pihole_dir/pihole/gravity.db ".restore $sync_dir/gravity.dump"
       docker start pihole
     fi
   fi
