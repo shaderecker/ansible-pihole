@@ -29,6 +29,7 @@
   docker_container:
     name: pihole
     image: "{{ pihole_image }}"
+    pull: yes
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
