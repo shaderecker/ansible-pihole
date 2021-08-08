@@ -11,7 +11,9 @@ The repository contains four Ansible Playbooks. Each one is described here short
 - One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit)
 - Headless setup (configuration before first boot):
   - Enable [SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md) `"3. Enable SSH on a headless Raspberry Pi..."`
-  - Enable [wireless networking](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md) or connect with LAN
+  - Enable [wireless networking](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md) or connect with LAN  
+    If you use LAN exclusively, consider disabling Wifi by adding `dtoverlay=disable-wifi` to `/boot/config.txt`
+
 - Set static IPs for your Raspberry Pi's (static DHCP assignment/reservation in your Router/DHCP server is sufficient)
 - Configure your targets (IPs of your Raspberry Pi's) and other settings in [`inventory.yaml`](inventory.yaml)  
 You can add or remove hosts in the inventory, depending on how many Raspberry Pi's you use.
