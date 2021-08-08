@@ -24,7 +24,6 @@ These roles are included:
   - Add the ssh key fetched from your GitHub user, configured in [`github_user_for_ssh_key`](inventory.yaml#L13) (Alternatively you can also set your ssh key directly [here](roles/bootstrap/tasks/main.yaml#L3))
   - Lock the password to prevent local terminal login
   - Set some useful bash aliases
-  - Set language to en_US
   - Set timezone, configured in [`timezone`](inventory.yaml#L14)
   - Set hostname to the respective Ansible inventory_hostname
   - Set a static DNS server, configured in [`static_dns`](inventory.yaml#L15)
