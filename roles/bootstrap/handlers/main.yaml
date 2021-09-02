@@ -1,0 +1,7 @@
+- name: Reboot after hostname change
+  reboot:
+
+- name: Restart dhcpcd
+  service:
+    name: dhcpcd
+    state: restarted

@@ -13,4 +13,4 @@
 
 - name: Reboot
   reboot:
-  when: reboot_required.stat.exists == true
+  when: reboot_required.stat.exists

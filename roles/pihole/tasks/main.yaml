@@ -10,12 +10,14 @@
   file:
     path: "/home/{{ ansible_user }}/pihole/pihole"
     state: directory
+    mode: 0775
 
 - name: Create FTL config
   blockinfile:
     path: "/home/{{ ansible_user }}/pihole/pihole/pihole-FTL.conf"
     create: yes
     block: MAXDBDAYS={{ pihole_ftl_max_db_days }}
+    mode: 0644
 
 - name: Get IPv6 link local address
   set_fact:

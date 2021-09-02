@@ -7,10 +7,7 @@
       MaxAuthTries 3
       MaxSessions 5
       PasswordAuthentication no
-  register: sshd
+  notify: Restart sshd
 
-- name: Restart sshd
-  service:
-    name: sshd
-    state: restarted
-  when: sshd.changed == true
+- name: Flush handlers
+  meta: flush_handlers

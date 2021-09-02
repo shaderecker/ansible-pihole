@@ -21,6 +21,7 @@
   file:
     path: pihole_sync
     state: directory
+    mode: 0755
   register: sync_dir
 
 - name: Copy sync script

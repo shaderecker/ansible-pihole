@@ -43,10 +43,7 @@
         "ipv6": true,
         "fixed-cidr-v6": "2001:db8:1::/64"
       }
-  register: daemon
+  notify: Restart Docker
 
-- name: Restart Docker
-  service:
-    name: docker
-    state: restarted
-  when: daemon.changed == true
+- name: Flush handlers
+  meta: flush_handlers

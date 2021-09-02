@@ -49,27 +49,20 @@
     path: /etc/hostname
     regexp: "^"
     line: "{{ inventory_hostname }}"
-  register: pi_hostname
+  notify: Reboot after hostname change
 
 - name: Set hosts
   lineinfile:
     path: /etc/hosts
     regexp: "^127.0.1.1"
     line: 127.0.1.1       {{ inventory_hostname }}
-  register: pi_hosts
-
-- name: Reboot after hostname change
-  reboot:
-  when: pi_hostname.changed == true or pi_hosts.changed == true
+  notify: Reboot after hostname change
 
 - name: Set custom DNS servers
   blockinfile:
     path: /etc/dhcpcd.conf
     block: static domain_name_servers={{ static_dns }}
-  register: dns
+  notify: Restart dhcpcd
 
-- name: Restart dhcpcd
-  service:
-    name: dhcpcd
-    state: restarted
-  when: dns.changed == true
+- name: Flush handlers
+  meta: flush_handlers

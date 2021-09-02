@@ -4,11 +4,10 @@
     block: |
       net.ipv4.ip_nonlocal_bind = 1
       net.ipv6.ip_nonlocal_bind = 1
-  register: sysctl
+  notify: Reload sysctl config
 
-- name: Reload sysctl config
-  command: sysctl -p
-  when: sysctl.changed == true
+- name: Flush handlers
+  meta: flush_handlers
 
 - name: Update sources to bullseye
   replace:
@@ -24,11 +23,11 @@
     autoremove: yes
     update_cache: yes
     upgrade: dist
-  when: sources.changed == true
+  when: sources.changed
 
 - name: Reboot
   reboot:
-  when: sources.changed == true
+  when: sources.changed
 
 - name: Install keepalived
   apt:
@@ -40,16 +39,13 @@
     dest: /etc/keepalived/check_pihole.sh
     src: check_pihole.sh
     mode: 0755
-  register: check_pihole
 
 - name: Configure keepalived
   template:
     dest: /etc/keepalived/keepalived.conf
     src: keepalived.j2
-  register: keepalived_conf
+    mode: 0644
+  notify: Restart keepalived service
 
-- name: Restart keepalived service
-  service:
-    name: keepalived
-    state: restarted
-  when: check_pihole.changed == true or keepalived_conf.changed == true
+- name: Flush handlers
+  meta: flush_handlers
