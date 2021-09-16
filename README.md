@@ -35,7 +35,9 @@ These roles are included:
   - Disable password authentication
 - [`docker`](roles/docker/tasks/main.yaml): Install and configure Docker
 - [`pihole`](roles/pihole/tasks/main.yaml): Start/Update Pi-hole container
-  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L24)
+  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L25)
+  - The [`pihole_ha_mode`](inventory.yaml#L25) option is used to switch between HA or Single mode to determine the IPv4/IPv6 addresses for the Pi-hole services (bind IPs for Web/DNS, pi.hole DNS record) and is enabled by default.  
+    ⚠️ Disable this if you don't intend to deploy a HA setup with keepalived.
 
 ## `update-pihole.yaml`
 This playbook is for subsequent runs after the `bootstrap-pihole.yaml` playbook was run at least once.  
@@ -59,7 +61,7 @@ The priority of each Pi-hole can be configured in [`inventory.yaml`](inventory.y
       ansible_host: 192.168.178.45
       priority: 101
 ```
-The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L25-L26):
+The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L26-L27):
 ```yaml
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
@@ -76,14 +78,15 @@ What gets synced:
 - `custom.list` (Local DNS Records)
 - `05-pihole-custom-cname.conf` (Local CNAME Records)
 
-If you enabled HA (high availability) with the `keepalived.yaml` playbook, the primary instance will be the one currently occupying the Virtual IP address (evaluated at each cronjob run).  
-Otherwise you can set the [`sync_target`](inventory.yaml#L27) variable to the IP address of your primary Pi-hole instance.
+#### Default: Pull from VIP
+If you enabled HA (high availability) with the `keepalived.yaml` playbook, the primary instance will be the one currently occupying the Virtual IP address (evaluated at each cronjob run).
 
-Default: Pull from VIP
 ```yaml
 sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
 ```
-Alternative: Pull from primary instance (assuming your primary is `pihole-1`, otherwise adapt)
+
+#### Alternative: Pull from primary instance
+You can set the [`sync_target`](inventory.yaml#L28) variable to the IP address of your primary Pi-hole instance (in my example `pihole-1`, otherwise adapt).
 ```yaml
 sync_target: "{{ hostvars['pihole-1'].ansible_host }}"
 ```
