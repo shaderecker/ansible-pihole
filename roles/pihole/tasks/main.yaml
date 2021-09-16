@@ -27,6 +27,20 @@
     label: "{{ item.address }}"
   when: "'link' in item.scope"
 
+- name: Set ServerIP addresses (HA mode)
+  set_fact:
+    server_ip: "{{ pihole_vip_ipv4.split('/')[0] }}"
+    server_ip_v6: "{{ pihole_vip_ipv6.split('/')[0] }}"
+    execution_mode: "HA setup with keepalived"
+  when: pihole_ha_mode
+
+- name: Set ServerIP addresses (single mode)
+  set_fact:
+    server_ip: "{{ ansible_host }}"
+    server_ip_v6: "{{ ipv6 }}"
+    execution_mode: "single node setup"
+  when: not pihole_ha_mode
+
 - name: Start/Update pihole container
   docker_container:
     name: pihole
@@ -35,8 +49,8 @@
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
-      ServerIP: "0.0.0.0"
-      ServerIPv6: "::"
+      ServerIP: "{{ server_ip }}"
+      ServerIPv6: "{{ server_ip_v6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
       DNSMASQ_LISTENING: "local"
@@ -70,13 +84,9 @@
     images_filters:
       dangling: false
 
-- name: ATTENTION!!!
+- name: INFORMATION
   debug:
     msg:
-      - "Make sure to point your DNS server settings to this Pi-hole:"
-      - "DNSv4: {{ ansible_host }}"
-      - "DNSv6: {{ ipv6 }}"
-      - ""
-      - "In the HA setup with keepalived, these are your settings:"
-      - "DNSv4: {{ pihole_vip_ipv4.split('/')[0] }}"
-      - "DNSv6: {{ pihole_vip_ipv6.split('/')[0] }}"
+      - "In the {{ execution_mode }} make sure to point your DNS server settings here:"
+      - "DNSv4: {{ server_ip }}"
+      - "DNSv6: {{ server_ip_v6 }}"
