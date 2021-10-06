@@ -5,6 +5,8 @@ Optionally you can enable HA (high availability) with keepalived and sync settin
 
 The repository contains four Ansible Playbooks. Each one is described here shortly.
 
+For more info about the Docker Pi-hole image please check the official repository: https://github.com/pi-hole/docker-pi-hole
+
 ## Base Setup
 - An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.10 or later)
 - The [openssh_keypair](https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html) Ansible module installed.
@@ -35,7 +37,10 @@ These roles are included:
   - Disable password authentication
 - [`docker`](roles/docker/tasks/main.yaml): Install and configure Docker
 - [`pihole`](roles/pihole/tasks/main.yaml): Start/Update Pi-hole container
-  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L25)
+  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L25)  
+    The options prefixed with `pihole_` are described in the official [docker-pi-hole readme](https://github.com/pi-hole/docker-pi-hole#environment-variables)  
+    (except for `pihole_image`, `pihole_ha_mode`, `pihole_vip_ipv4`, `pihole_vip_ipv6`: those are custom variables of this playbook)  
+    The options prefixed with `pihole_ftl` are described in the official [Pi-hole FTL Configuration](https://docs.pi-hole.net/ftldns/configfile/)
   - The [`pihole_ha_mode`](inventory.yaml#L25) option is used to switch between HA or Single mode to determine the IPv4/IPv6 addresses for the Pi-hole services (bind IPs for Web/DNS, pi.hole DNS record) and is enabled by default.  
     ⚠️ Disable this if you don't intend to deploy a HA setup with keepalived.
 
