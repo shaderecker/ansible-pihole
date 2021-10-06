@@ -23,6 +23,7 @@ You can add or remove hosts in the inventory, depending on how many Raspberry Pi
 ## `bootstrap-pihole.yaml`
 This playbook is for the first time run (but it can be rerun any time).  
 It will bootstrap a fresh Raspberry Pi OS installation, install Docker, and Pi-hole.  
+You can run it with: `ansible-playbook -i inventory.yaml bootstrap-pihole.yaml`  
 These roles are included:
 - [`bootstrap`](roles/bootstrap/tasks/main.yaml): Some basic configuration  
   - Add the ssh key fetched from your GitHub user, configured in [`github_user_for_ssh_key`](inventory.yaml#L13) (Alternatively you can also set your ssh key directly [here](roles/bootstrap/tasks/main.yaml#L3))
@@ -40,17 +41,19 @@ These roles are included:
   - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L25)  
     The options prefixed with `pihole_` are described in the official [docker-pi-hole readme](https://github.com/pi-hole/docker-pi-hole#environment-variables)  
     (except for `pihole_image`, `pihole_ha_mode`, `pihole_vip_ipv4`, `pihole_vip_ipv6`: those are custom variables of this playbook)  
-    The options prefixed with `pihole_ftl` are described in the official [Pi-hole FTL Configuration](https://docs.pi-hole.net/ftldns/configfile/)
+    The options prefixed with `pihole_ftl_` are described in the official [Pi-hole FTL Configuration](https://docs.pi-hole.net/ftldns/configfile/)
   - The [`pihole_ha_mode`](inventory.yaml#L25) option is used to switch between HA or Single mode to determine the IPv4/IPv6 addresses for the Pi-hole services (bind IPs for Web/DNS, pi.hole DNS record) and is enabled by default.  
     ⚠️ Disable this if you don't intend to deploy a HA setup with keepalived.
 
 ## `update-pihole.yaml`
 This playbook is for subsequent runs after the `bootstrap-pihole.yaml` playbook was run at least once.  
+You can run it with: `ansible-playbook -i inventory.yaml update-pihole.yaml`  
 It contains only a subset of roles for faster runtime: [`updates`](roles/updates/tasks/main.yaml) and [`pihole`](roles/pihole/tasks/main.yaml)  
 This will keep the system up to date and can be used to roll out changes to the Pi-hole docker container, for example a new image version.
 
 ## `keepalived.yaml`
 This playbook enables a high availability failover cluster with `keepalived` between multiple Pi-hole instances.  
+You can run it with: `ansible-playbook -i inventory.yaml keepalived.yaml`  
 
 Motivation:  
 - Redundancy: Avoid a single point of failure (due to raspberry pi reboot, docker container failure/update/restart)
@@ -76,6 +79,7 @@ When maintaining and updating your Pi-hole instances with the `bootstrap-pihole.
 
 ## `sync.yaml`
 This playbook enables the synchronisation of settings between multiple Pi-hole instances.  
+You can run it with: `ansible-playbook -i inventory.yaml sync.yaml`  
 One Pi-hole functions as the primary instance and the others as secondaries which pull from the primary.  
 Syncing is scheduled as a cronjob and set to run two times per day (frequency can be changed [here](roles/sync/tasks/main.yaml#L28)).  
 What gets synced:
