@@ -24,6 +24,9 @@ You can add or remove hosts in the inventory, depending on how many Raspberry Pi
 This playbook is for the first time run (but it can be rerun any time).  
 It will bootstrap a fresh Raspberry Pi OS installation, install Docker, and Pi-hole.  
 You can run it with: `ansible-playbook -i inventory.yaml bootstrap-pihole.yaml`  
+
+If the playbook fails during the first run while installing Docker, please reboot your Pi and re-run the playbook!
+
 These roles are included:
 - [`bootstrap`](roles/bootstrap/tasks/main.yaml): Some basic configuration  
   - Add the ssh key fetched from your GitHub user, configured in [`github_user_for_ssh_key`](inventory.yaml#L13) (Alternatively you can also set your ssh key directly [here](roles/bootstrap/tasks/main.yaml#L3))
