@@ -6,19 +6,6 @@
     state: directory
     mode: 0755
 
-- name: Create 2nd pihole directory
-  file:
-    path: "/home/{{ ansible_user }}/pihole/pihole"
-    state: directory
-    mode: 0775
-
-- name: Create FTL config
-  blockinfile:
-    path: "/home/{{ ansible_user }}/pihole/pihole/pihole-FTL.conf"
-    create: yes
-    block: MAXDBDAYS={{ pihole_ftl_max_db_days }}
-    mode: 0644
-
 - name: Get IPv6 link local address
   set_fact:
     ipv6: "{{ item.address }}"
@@ -58,6 +45,7 @@
       REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
       REV_SERVER_TARGET: "{{ pihole_rev_server_target }}"
       REV_SERVER_CIDR: "{{ pihole_rev_server_cidr }}"
+      FTLCONF_MAXDBDAYS: "{{ pihole_ftl_max_db_days }}"
     dns_servers:
       - 127.0.0.1
       - "{{ static_dns }}"
