@@ -41,11 +41,11 @@ These roles are included:
   - Disable password authentication
 - [`docker`](roles/docker/tasks/main.yaml): Install and configure Docker
 - [`pihole`](roles/pihole/tasks/main.yaml): Start/Update Pi-hole container
-  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L17-L25)  
+  - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L16-L23)  
     The options prefixed with `pihole_` are described in the official [docker-pi-hole readme](https://github.com/pi-hole/docker-pi-hole#environment-variables)  
     (except for `pihole_image`, `pihole_ha_mode`, `pihole_vip_ipv4`, `pihole_vip_ipv6`: those are custom variables of this playbook)  
     The options prefixed with `pihole_ftl_` are described in the official [Pi-hole FTL Configuration](https://docs.pi-hole.net/ftldns/configfile/)
-  - The [`pihole_ha_mode`](inventory.yaml#L25) option is used to switch between HA or Single mode to determine the IPv4/IPv6 addresses for the Pi-hole services (bind IPs for Web/DNS, pi.hole DNS record) and is enabled by default.  
+  - The [`pihole_ha_mode`](inventory.yaml#L24) option is used to switch between HA or Single mode to determine the IPv4/IPv6 addresses for the Pi-hole services (bind IPs for Web/DNS, pi.hole DNS record) and is enabled by default.  
     ⚠️ Disable this if you don't intend to deploy a HA setup with keepalived.
 
 ## `update-pihole.yaml`
@@ -72,7 +72,7 @@ The priority of each Pi-hole can be configured in [`inventory.yaml`](inventory.y
       ansible_host: 192.168.178.45
       priority: 101
 ```
-The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L26-L27):
+The desired VIPs (Virtual IPs) for IPv4 and IPv6 can be configured in [`inventory.yaml`](inventory.yaml#L25-L26):
 ```yaml
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
@@ -98,7 +98,7 @@ sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
 ```
 
 #### Alternative: Pull from primary instance
-You can set the [`sync_target`](inventory.yaml#L28) variable to the IP address of your primary Pi-hole instance (in my example `pihole-1`, otherwise adapt).
+You can set the [`sync_target`](inventory.yaml#L27) variable to the IP address of your primary Pi-hole instance (in my example `pihole-1`, otherwise adapt).
 ```yaml
 sync_target: "{{ hostvars['pihole-1'].ansible_host }}"
 ```

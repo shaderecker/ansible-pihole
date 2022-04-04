@@ -12,7 +12,7 @@
 
 - name: Add Docker apt repository
   apt_repository:
-    repo: deb [arch=armhf] https://download.docker.com/linux/raspbian {{ docker_release }} stable
+    repo: deb [arch=armhf] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable
     filename: docker
 
 - name: Install Docker
