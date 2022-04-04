@@ -63,6 +63,7 @@ Motivation:
 - Architecture of DNS requires a HA solution on the DNS server side (most clients will not properly handle unavailable DNS servers; if a client has multiple DNS servers configured it will try them one after another only moving on if one times out)
 - Poor DNS query performance during system updates & docker image pulls (experienced on my Pi 3 Model B)
 
+As healthcheck, the status of the Pi-hole docker container is evaluated.  
 Communication happens over VRRP (Virtual Router Redundancy Protocol) which uses Multicast.  
 The priority of each Pi-hole can be configured in [`inventory.yaml`](inventory.yaml), for example:
 ```yaml
