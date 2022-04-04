@@ -9,26 +9,6 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Update sources to bullseye
-  replace:
-    path: /etc/apt/sources.list
-    regexp: buster
-    replace: bullseye
-  register: sources
-
-- name: Upgrade to bullseye
-  apt:
-    force_apt_get: yes
-    autoclean: yes
-    autoremove: yes
-    update_cache: yes
-    upgrade: dist
-  when: sources.changed
-
-- name: Reboot
-  reboot:
-  when: sources.changed
-
 - name: Install keepalived
   apt:
     force_apt_get: yes

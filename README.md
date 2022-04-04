@@ -10,7 +10,7 @@ For more info about the Docker Pi-hole image please check the official repositor
 ## Base Setup
 - An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.10 or later)
 - The [openssh_keypair](https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html) Ansible module installed.
-- One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit)
+- One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit) (bullseye)
 - Headless setup (configuration before first boot):
   - Enable [SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md) `"3. Enable SSH on a headless Raspberry Pi..."`
   - Enable [wireless networking](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md) or connect with LAN  
@@ -63,8 +63,6 @@ Motivation:
 - Architecture of DNS requires a HA solution on the DNS server side (most clients will not properly handle unavailable DNS servers; if a client has multiple DNS servers configured it will try them one after another only moving on if one times out)
 - Poor DNS query performance during system updates & docker image pulls (experienced on my Pi 3 Model B)
 
-Since the version of keepalived and its dependencies in the Raspberry Pi OS buster sources is heavily outdated (and has some nasty bugs), the playbook will upgrade the system to Raspberry Pi OS bullseye which includes a more recent keepalived version.  
-As healthcheck, the status of the Pi-hole docker container is evaluated.  
 Communication happens over VRRP (Virtual Router Redundancy Protocol) which uses Multicast.  
 The priority of each Pi-hole can be configured in [`inventory.yaml`](inventory.yaml), for example:
 ```yaml
