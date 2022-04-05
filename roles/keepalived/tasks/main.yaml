@@ -20,6 +20,12 @@
     src: check_pihole.sh
     mode: 0755
 
+- name: Copy notify_pihole.sh
+  copy:
+    dest: /etc/keepalived/notify_pihole.sh
+    src: notify_pihole.sh
+    mode: 0755
+
 - name: Configure keepalived
   template:
     dest: /etc/keepalived/keepalived.conf

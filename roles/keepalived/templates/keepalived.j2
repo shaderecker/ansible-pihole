@@ -23,6 +23,8 @@ vrrp_sync_group PIHOLE {
     track_script {
         check_pihole
     }
+
+    notify /etc/keepalived/notify_pihole.sh
 }
 
 vrrp_instance PIHOLE-IPv4 {
