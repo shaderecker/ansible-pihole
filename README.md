@@ -9,15 +9,16 @@ For more info about the Docker Pi-hole image please check the official repositor
 
 ## Base Setup
 - An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.10 or later)
-- The [openssh_keypair](https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html) Ansible module installed.
-- One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit) (bullseye)
+- The [openssh_keypair](https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html) Ansible module installed
+- One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.com/software/operating-systems/) (bullseye)
 - Headless setup (configuration before first boot):
-  - Enable [SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/README.md) `"3. Enable SSH on a headless Raspberry Pi..."`
-  - Enable [wireless networking](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md) or connect with LAN  
+  - Enable [SSH](https://www.raspberrypi.com/documentation/computers/remote-access.html#enabling-the-server) `"NOTE For headless setup..."`
+  - Enable [wireless networking](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-networking-2) or connect with LAN  
     If you use LAN exclusively, consider disabling Wifi by adding `dtoverlay=disable-wifi` to `/boot/config.txt`
+  - Configure a [user](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-a-user)
 
 - Set static IPs for your Raspberry Pi's (static DHCP assignment/reservation in your Router/DHCP server is sufficient)
-- Configure your targets (IPs of your Raspberry Pi's) and other settings in [`inventory.yaml`](inventory.yaml)  
+- Configure your targets (IPs and initial user + password of your Raspberry Pi's) and other settings in [`inventory.yaml`](inventory.yaml)  
 You can add or remove hosts in the inventory, depending on how many Raspberry Pi's you use.
 
 ## `bootstrap-pihole.yaml`
