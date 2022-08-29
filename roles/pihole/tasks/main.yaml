@@ -14,17 +14,17 @@
     label: "{{ item.address }}"
   when: "'link' in item.scope"
 
-- name: Set FTLCONF_REPLY_ADDR (HA mode)
+- name: Determine Pi-hole host IPs (HA mode)
   set_fact:
-    ftlconf_reply_addr4: "{{ pihole_vip_ipv4.split('/')[0] }}"
-    ftlconf_reply_addr6: "{{ pihole_vip_ipv6.split('/')[0] }}"
+    pihole_local_ipv4: "{{ pihole_vip_ipv4.split('/')[0] }}"
+    pihole_local_ipv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
     execution_mode: "HA setup with keepalived"
   when: pihole_ha_mode
 
-- name: Set FTLCONF_REPLY_ADDR (single mode)
+- name: Determine Pi-hole host IPs (single mode)
   set_fact:
-    ftlconf_reply_addr4: "{{ ansible_host }}"
-    ftlconf_reply_addr6: "{{ ipv6 }}"
+    pihole_local_ipv4: "{{ ansible_host }}"
+    pihole_local_ipv6: "{{ ipv6 }}"
     execution_mode: "single node setup"
   when: not pihole_ha_mode
 
@@ -36,8 +36,6 @@
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
-      FTLCONF_REPLY_ADDR4: "{{ ftlconf_reply_addr4 }}"
-      FTLCONF_REPLY_ADDR6: "{{ ftlconf_reply_addr6 }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
       DNSMASQ_LISTENING: "local"
@@ -76,5 +74,5 @@
   debug:
     msg:
       - "In the {{ execution_mode }} make sure to point your DNS server settings here:"
-      - "DNSv4: {{ ftlconf_reply_addr4 }}"
-      - "DNSv6: {{ ftlconf_reply_addr6 }}"
+      - "DNSv4: {{ pihole_local_ipv4 }}"
+      - "DNSv6: {{ pihole_local_ipv6 }}"
