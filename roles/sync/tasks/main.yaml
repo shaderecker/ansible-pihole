@@ -1,8 +1,16 @@
 - name: Install sqlite3
   apt:
-    force_apt_get: yes
+    force_apt_get: true
     name: sqlite3
-  become: yes
+  become: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install sqlite3 CentOS
+  yum:
+    name:
+      - sqlite
+    state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
@@ -15,7 +23,7 @@
     key: "{{ ssh_key.public_key }}"
     user: "{{ ansible_user }}"
   delegate_to: "{{ item }}"
-  loop: "{{ groups['all']|difference([inventory_hostname]) }}"
+  loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
 
 - name: Create sync folder
   file:

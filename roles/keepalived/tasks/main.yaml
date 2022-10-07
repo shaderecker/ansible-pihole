@@ -9,10 +9,32 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Install keepalived
+- name: Install keepalived Debian
   apt:
-    force_apt_get: yes
+    force_apt_get: true
     name: keepalived
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install keepalived CentOS
+  yum:
+    name:
+      - keepalived
+    state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Change the keepalived_t domain to permissive
+  community.general.selinux_permissive:
+    name: keepalived_t
+    permissive: true
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Since yum doesn't like using notify because yum we have to this instead
+- name: Start service keepalived started, if not started
+  ansible.builtin.service:
+    name: keepalived
+    state: stopped
+    enabled: true
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Copy check_pihole.sh
   copy:

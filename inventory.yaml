@@ -11,6 +11,7 @@ all:
     ansible_password: raspberry # only used on first run
     ansible_python_interpreter: /usr/bin/python3
     github_user_for_ssh_key: shaderecker
+    password_lock: true
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
     pihole_image: "pihole/pihole:2022.09.4"
@@ -25,3 +26,6 @@ all:
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
+    install_docker_compose: true
+    docker_compose_version: "v2.11.2"
+    docker_compose_sha265: "sha256:eb65ae4a4dd4de7dc767935c2bc49e3641d265df1273ea8f577cadb6bd9b4ebf" #SHA256 for aarm64 version

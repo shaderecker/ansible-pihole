@@ -1,13 +1,17 @@
-- name: Hardening
-  blockinfile:
-    path: /etc/ssh/sshd_config
+- name: Configure sshd
+  lineinfile:
+    path: "/etc/ssh/sshd_config"
+    regex: "^(#)?{{item.key}}"
+    line: "{{item.key}} {{item.value}}"
+    state: present
     validate: /usr/sbin/sshd -T -f %s
-    block: |
-      PermitRootLogin no
-      MaxAuthTries 3
-      MaxSessions 5
-      PasswordAuthentication no
-  notify: Restart sshd
+  loop:
+    - { key: "PermitRootLogin", value: "no" }
+    - { key: "PasswordAuthentication", value: "no" }
+    - { key: "MaxSessions", value: "5" }
+    - { key: "MaxAuthTries", value: "3" }
+  notify:
+    - Restart sshd
 
 - name: Flush handlers
   meta: flush_handlers

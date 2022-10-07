@@ -3,18 +3,21 @@
     key: https://github.com/{{ github_user_for_ssh_key }}.keys
     user: "{{ ansible_user }}"
     comment: "github-{{ github_user_for_ssh_key }}"
+  loop:
 
-- name: Lock password for {{ ansible_user }}
+
+- name: "Lock password for {{ ansible_user }}"
   user:
     name: "{{ ansible_user }}"
-    password_lock: yes
+    password_lock: true
+  when: password_lock == true
 
-- name: bashrc for {{ ansible_user }}
+- name: "Bashrc for {{ ansible_user }}"
   blockinfile:
     path: "/home/{{ ansible_user }}/.bashrc"
     block: alias ll='ls -la'
 
-- name: bashrc for root
+- name: Bashrc for "{{ ansible_user }}"
   blockinfile:
     path: "{{ ansible_user_dir }}/.bashrc"
     block: |
@@ -37,12 +40,23 @@
     path: /etc/timezone
     regexp: "^"
     line: "{{ timezone }}"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Set localtime
   file:
     src: /usr/share/zoneinfo/{{ timezone }}
     dest: /etc/localtime
     state: link
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: "Set timezone to {{ timezone }}"
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+    use: systemd
 
 - name: Set hostname
   lineinfile:
@@ -50,6 +64,7 @@
     regexp: "^"
     line: "{{ inventory_hostname }}"
   notify: Reboot after hostname change
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Set hosts
   lineinfile:
@@ -57,12 +72,6 @@
     regexp: "^127.0.1.1"
     line: 127.0.1.1       {{ inventory_hostname }}
   notify: Reboot after hostname change
-
-- name: Set custom DNS servers
-  blockinfile:
-    path: /etc/dhcpcd.conf
-    block: static domain_name_servers={{ static_dns }}
-  notify: Restart dhcpcd
 
 - name: Flush handlers
   meta: flush_handlers
