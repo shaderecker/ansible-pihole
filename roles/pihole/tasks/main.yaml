@@ -57,6 +57,13 @@
       max-file: "5"
   notify: Stop and disable resolver
 
+#- name: Stop and disable resolver
+#  ansible.builtin.service:
+#    name: systemd-resolved
+#    state: stopped
+#    enabled: false
+#  when: ansible_distribution == 'Ubuntu'
+
 - block:
   - name: Adding DNS service for firewalld
     copy:

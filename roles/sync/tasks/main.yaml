@@ -33,9 +33,16 @@
     mode: 0755
   register: sync_dir
 
+- name: Copy sync script
+  template:
+    dest: "{{ sync_dir.path }}/pihole_sync.sh"
+    src: pihole_sync.j2
+    mode: 0755
+
 - name: Schedule sync with cron
   ansible.builtin.cron:
     hour: "*"
     minute: "0"
-    job: "{{ ansible_user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
+    job: "/home/{{ ansible_user }}/{{ sync_dir.path }}/pihole_sync.sh"
+    user: root
     name: pihole-sync
