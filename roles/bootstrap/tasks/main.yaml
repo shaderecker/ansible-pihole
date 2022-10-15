@@ -1,10 +1,9 @@
 - name: Add ssh key
   ansible.posix.authorized_key:
-    key: https://github.com/{{ github_user_for_ssh_key }}.keys
+    key: "{{ lookup('file', '/home/richardl/.ssh/id_rsa.pub') }}"
     user: "{{ ansible_user }}"
-    comment: "github-{{ github_user_for_ssh_key }}"
+    comment: github-"{{ github_user_for_ssh_key }}"
   loop:
-
 
 - name: "Lock password for {{ ansible_user }}"
   user:
@@ -72,6 +71,13 @@
     regexp: "^127.0.1.1"
     line: 127.0.1.1       {{ inventory_hostname }}
   notify: Reboot after hostname change
+
+- name: Set custom DNS servers
+  blockinfile:
+    path: /etc/dhcpcd.conf
+    block: static domain_name_servers={{ static_dns }}
+  notify: Restart dhcpcd
+  when: ansible_distribution == 'Debian'and ansible_architecture == 'aarch64'
 
 - name: Flush handlers
   meta: flush_handlers

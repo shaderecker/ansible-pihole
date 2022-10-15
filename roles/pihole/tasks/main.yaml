@@ -55,25 +55,28 @@
     log_options:
       max-size: "10m"
       max-file: "5"
+  notify: Stop and disable resolver
 
-- name: Adding DNS service for firewalld
-  copy:
-    src: dns.xml
-    dest: /etc/firewalld/services/dns.xml
-    owner: root
-    group: root
+- block:
+  - name: Adding DNS service for firewalld
+    copy:
+      src: dns.xml
+      dest: /etc/firewalld/services/dns.xml
+      owner: root
+      group: root
 
-- name: Default firewalld rules
-  ansible.posix.firewalld:
-    service: "{{ item }}"
-    state: enabled
-    permanent: true
-    immediate: true
-    zone: public
-  with_items:
-    - http
-    - https
-    - dns
+  - name: Default firewalld rules
+    ansible.posix.firewalld:
+      service: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+      zone: public
+    with_items:
+      - http
+      - https
+      - dns
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Bootps firewalld rule
   ansible.posix.firewalld:

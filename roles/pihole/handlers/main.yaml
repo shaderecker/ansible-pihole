@@ -1,0 +1,6 @@
+- name: Stop and disable resolver
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+

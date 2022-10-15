@@ -9,13 +9,14 @@
   yum:
     name:
       - sqlite
+      - rsync
     state: latest
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
     comment: pihole-sync-{{ inventory_hostname }}
-    path: .ssh/id_rsa_sync
+    path: '{{ ansible_user_dir }}/.ssh/id_rsa_sync'
   register: ssh_key
 
 - name: Add key to authorized_keys on all other nodes
@@ -32,15 +33,9 @@
     mode: 0755
   register: sync_dir
 
-- name: Copy sync script
-  template:
-    dest: "{{ sync_dir.path }}/pihole_sync.sh"
-    src: pihole_sync.j2
-    mode: 0755
-
 - name: Schedule sync with cron
   ansible.builtin.cron:
-    hour: "2,14"
+    hour: "*"
     minute: "0"
     job: "{{ ansible_user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
     name: pihole-sync

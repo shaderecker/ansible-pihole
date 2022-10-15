@@ -27,10 +27,15 @@ vrrp_sync_group PIHOLE {
 
 vrrp_instance PIHOLE-IPv4 {
     interface {{ ansible_default_ipv4.interface }}
+    state {{ keepalive_role }}
     virtual_router_id 1
     priority {{ priority }}
     advert_int 1
     preempt_delay 900
+    unicast_scr {{ ansible_default_ipv4.interface }}
+    unicast_peer {
+        {{ peerip_addr }}/24
+    }
 
     virtual_ipaddress {
         {{ pihole_vip_ipv4 }}

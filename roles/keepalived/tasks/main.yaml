@@ -18,8 +18,10 @@
 - name: Install keepalived CentOS
   yum:
     name:
+      - kernel-headers
+      - kernel-devel
       - keepalived
-    state: latest
+    state: present
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Change the keepalived_t domain to permissive
@@ -42,12 +44,20 @@
     src: check_pihole.sh
     mode: 0755
 
+# Finds the IP_ADDRS of the group and removes the ansible_host from it's peer list
+- set_fact:
+    peerip_addr: "{{ groups['all'] | map('extract', hostvars, 'ansible_host') | difference(ansible_host) | list }}"
+  run_once: true
+
 - name: Configure keepalived
   template:
-    dest: /etc/keepalived/keepalived.conf
+    dest: /tmp/keepalived.conf
     src: keepalived.j2
     mode: 0644
   notify: Restart keepalived service
+
+- name: Remove ansible junk from config file
+  shell: cat /tmp/keepalived.conf | sed 's/[][]//g' | sed "s/['\]//g" > /etc/keepalived/keepalived.conf
 
 - name: Flush handlers
   meta: flush_handlers
