@@ -13,36 +13,44 @@
     state: latest
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Generate ssh keypair
-  community.crypto.openssh_keypair:
-    comment: pihole-sync-{{ inventory_hostname }}
-    path: '{{ ansible_user_dir }}/.ssh/id_rsa_sync'
-  register: ssh_key
-
-- name: Add key to authorized_keys on all other nodes
-  ansible.posix.authorized_key:
-    key: "{{ ssh_key.public_key }}"
-    user: "{{ ansible_user }}"
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
-
-- name: Create sync folder
-  file:
-    path: pihole_sync
+- name: Create gravity sync folder
+  ansible.builtin.file:
+    path: /etc/gravity-sync/
     state: directory
-    mode: 0755
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
   register: sync_dir
+
+- name: Create gravity sync folder
+  ansible.builtin.file:
+    path: /var/log/gravity-sync/
+    state: directory
+    owner: "root"
+    group: "root"
+  register: sync_log_dir
+
+- name: Git checkout gravity-sync
+  ansible.builtin.git:
+    repo: 'https://github.com/vmstan/gravity-sync.git'
+    dest: '{{ sync_dir.path }}.gs'
+    version: "{{ gravity_sync_version }}"
+
+- name: Move program to correct location
+  ansible.builtin.copy:
+    src: '{{ sync_dir.path }}.gs/gravity-sync'
+    dest: "/usr/local/bin/gravity-sync"
+    remote_src: yes
+    mode: 0755
+
+- set_fact:
+    peerip_addr: "{{ groups['all'] | map('extract', hostvars, 'ansible_host') | difference(ansible_host) | list }}"
+  run_once: true
 
 - name: Copy sync script
   template:
-    dest: "{{ sync_dir.path }}/pihole_sync.sh"
-    src: pihole_sync.j2
-    mode: 0755
+    dest: "{{ sync_dir.path }}/gravity-sync.conf"
+    src: gravity-sync.j2
+    mode: 0644
 
-- name: Schedule sync with cron
-  ansible.builtin.cron:
-    hour: "*"
-    minute: "0"
-    job: "/home/{{ ansible_user }}/{{ sync_dir.path }}/pihole_sync.sh"
-    user: root
-    name: pihole-sync
+# add the program executable to the correct path
+# add the configuration file to the folder
