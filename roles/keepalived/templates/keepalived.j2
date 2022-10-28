@@ -27,7 +27,7 @@ vrrp_sync_group PIHOLE {
 
 vrrp_instance PIHOLE-IPv4 {
     interface {{ ansible_default_ipv4.interface }}
-    state {{ keepalive_role }}
+    #state {{ keepalive_role }}
     virtual_router_id 1
     priority {{ priority }}
     advert_int 1

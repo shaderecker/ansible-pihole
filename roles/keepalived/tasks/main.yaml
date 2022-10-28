@@ -56,8 +56,8 @@
     mode: 0644
   notify: Restart keepalived service
 
-- name: Remove ansible junk from config file
-  shell: cat /tmp/keepalived.conf | sed 's/[][]//g' | sed "s/['\]//g" > /etc/keepalived/keepalived.conf
+- name: Remove ansible junk from config file for keepalive
+  ansible.builtin.shell: cat /tmp/keepalived.conf | sed 's/[][]//g' | sed "s/['\]//g" > /etc/keepalived/keepalived.conf
 
 - name: Flush handlers
   meta: flush_handlers
