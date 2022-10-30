@@ -1,9 +1,8 @@
 - name: Add ssh key
   ansible.posix.authorized_key:
-    key: "{{ lookup('file', '/home/richardl/.ssh/id_rsa.pub') }}"
+    key: https://github.com/{{ github_user_for_ssh_key }}.keys
     user: "{{ ansible_user }}"
-    comment: github-"{{ github_user_for_ssh_key }}"
-  loop:
+    comment: "github-{{ github_user_for_ssh_key }}"
 
 - name: "Lock password for {{ ansible_user }}"
   user:
@@ -13,7 +12,7 @@
 
 - name: "Bashrc for {{ ansible_user }}"
   blockinfile:
-    path: "/home/{{ ansible_user }}/.bashrc"
+    path: "{{ ansible_user_home_dir }}/.bashrc"
     block: alias ll='ls -la'
 
 - name: Bashrc for "{{ ansible_user }}"

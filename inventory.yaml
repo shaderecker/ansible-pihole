@@ -19,6 +19,7 @@ all:
     github_user_for_ssh_key: shaderecker # Change me to required value
     timezone: "Europe/London"
     static_dns: "1.1.1.1"
+    dnsmasq_listening: single
     pihole_container_name: pihole
     pihole_image: "pihole/pihole:latest"
     pihole_ftl_max_db_days: "180"
