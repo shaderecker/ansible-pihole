@@ -11,10 +11,10 @@ all:
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
+    password_lock: true # Change to false if you still wish to login via passwd auth
     ansible_user_home_dir: /home/{{ ansible_user }}
     ansible_python_interpreter: /usr/bin/python3
     github_user_for_ssh_key: shaderecker # Change me to required value
-    password_lock: true # Change to false if you still wish to login via passwd auth
     timezone: "Europe/London"
     static_dns: "1.1.1.1"
     pihole_container_name: pihole
