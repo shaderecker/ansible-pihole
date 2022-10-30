@@ -9,23 +9,26 @@ all:
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
+    ansible_user_home_dir: /home/{{ ansible_user }}
     ansible_python_interpreter: /usr/bin/python3
-    github_user_for_ssh_key: shaderecker
-    password_lock: true
-    timezone: "Europe/Berlin"
+    github_user_for_ssh_key: shaderecker # Change me to required value
+    password_lock: false
+    timezone: "Europe/London"
     static_dns: "1.1.1.1"
-    pihole_image: "pihole/pihole:2022.09.4"
+    pihole_container_name: pihole
+    pihole_image: "pihole/pihole:latest"
     pihole_ftl_max_db_days: "180"
-    pihole_webpassword: Intranet # example value, change it and better use ansible-vault
+    pihole_webpassword: 't4f!VUry0@elCjUgKbti7JL^NvGPEh3d' # example value, change it and better use ansible-vault
     pihole_dns: "1.1.1.1;2606:4700:4700::1111"
-    pihole_rev_server: "true"
-    pihole_rev_server_domain: "fritz.box"
-    pihole_rev_server_target: "192.168.178.1"
-    pihole_rev_server_cidr: "192.168.178.0/24"
-    pihole_ha_mode: yes
-    pihole_vip_ipv4: "192.168.178.10/24"
+    pihole_rev_server: "false"
+    pihole_rev_server_domain: "coalhill.zz"
+    pihole_rev_server_target: "172.16.6.1"
+    pihole_rev_server_cidr: "172.16.6.0/24"
+    pihole_ha_mode: true
+    pihole_vip_ipv4: "172.16.6.33/24"
     pihole_vip_ipv6: "fd00::10/64"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
-    install_docker_compose: true
     docker_compose_version: "v2.11.2"
-    docker_compose_sha265: "sha256:eb65ae4a4dd4de7dc767935c2bc49e3641d265df1273ea8f577cadb6bd9b4ebf" #SHA256 for aarm64 version
+    install_docker_compose: false
+    docker_compose_sha265: "sha256:eb65ae4a4dd4de7dc767935c2bc49e3641d265df1273ea8f577cadb6bd9b4ebf"
+    gravity_sync_version: v4.0.4
