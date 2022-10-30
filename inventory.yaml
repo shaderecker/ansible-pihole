@@ -3,9 +3,11 @@ all:
     pihole-1:
       ansible_host: 192.168.178.45
       priority: 101
+      keepalive_role: MASTERS
     pihole-2:
       ansible_host: 192.168.178.46
       priority: 100
+      keepalive_role: BACKUP
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
@@ -18,14 +20,14 @@ all:
     pihole_container_name: pihole
     pihole_image: "pihole/pihole:latest"
     pihole_ftl_max_db_days: "180"
-    pihole_webpassword: 't4f!VUry0@elCjUgKbti7JL^NvGPEh3d' # example value, change it and better use ansible-vault
+    pihole_webpassword: Intranet # example value, change it and better use ansible-vault
     pihole_dns: "1.1.1.1;2606:4700:4700::1111"
-    pihole_rev_server: "false"
-    pihole_rev_server_domain: "coalhill.zz"
-    pihole_rev_server_target: "172.16.6.1"
-    pihole_rev_server_cidr: "172.16.6.0/24"
-    pihole_ha_mode: true
-    pihole_vip_ipv4: "172.16.6.33/24"
+    pihole_rev_server: "true"
+    pihole_rev_server_domain: "fritz.box"
+    pihole_rev_server_target: "192.168.178.1"
+    pihole_rev_server_cidr: "192.168.178.0/24"
+    pihole_ha_mode: yes
+    pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
     docker_compose_version: "v2.11.2"
