@@ -2,10 +2,12 @@ all:
   hosts:
     pihole-1:
       ansible_host: 192.168.178.45
+      ansible_port: 22
       priority: 101
       keepalive_role: MASTERS
     pihole-2:
       ansible_host: 192.168.178.46
+      ansible_port: 22
       priority: 100
       keepalive_role: BACKUP
   vars:
