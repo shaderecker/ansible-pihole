@@ -1,7 +1,9 @@
 - name: Install sqlite3
   apt:
     force_apt_get: true
-    name: sqlite3
+    name:
+      - sqlite3
+      - git
   become: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
@@ -10,9 +12,11 @@
     name:
       - sqlite
       - rsync
+      - git
     state: latest
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
+# Create folders for tasks
 - name: Create gravity sync configuration folder
   ansible.builtin.file:
     path: /etc/gravity-sync/
@@ -29,6 +33,15 @@
     group: "root"
   register: sync_log_dir
 
+- name: Create root ssh folder
+  ansible.builtin.file:
+    path: "/root/.ssh/"
+    owner: "root"
+    group: "root"
+    mode: '0755'
+    state: directory
+  register: root_ssh_loc
+
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
     comment: pihole-sync-{{ inventory_hostname }}
@@ -38,30 +51,43 @@
     mode: '0600'
   register: ssh_key
 
-- name: Create known host file
+- name: Create known host file for ansible user
   ansible.builtin.file:
     path: "{{ ansible_user_home_dir }}/.ssh/known_hosts"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
     state: touch
-  register: known_hosts
+  register: known_hosts_user
+
+- name: Create known host file for root user
+  ansible.builtin.file:
+    path: "{{root_ssh_loc.path }}known_hosts"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+    state: touch
+  register: known_hosts_root
 
 - name: Ensure servers are present in known_hosts file
   known_hosts:
-    name: "{{ hostvars[item].ansible_host }}"
+    name: "{{ hostvars[item[0]].ansible_host }}"
     state: present
-    key: "{{ lookup('pipe', 'ssh-keyscan {{ hostvars[item].ansible_host }}') }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan {{ hostvars[item[0]].ansible_host }}') }}"
     hash_host: true
-    path: "{{ known_hosts.dest }}"
-  with_items: "{{ groups['all']|difference([inventory_hostname]) }}"
+    path: "{{ item[1].dest }}"
+  with_nested:
+    - "{{ groups['all']|difference([inventory_hostname]) }}"
+    - [ "{{ known_hosts_root }}", "{{ known_hosts_user }}" ]
 
 - name: Add key to authorized_keys on all other nodes
   ansible.posix.authorized_key:
     key: "{{ ssh_key.public_key }}"
-    user: "{{ ansible_user }}"
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['all']|difference([inventory_hostname]) }}"
+    user: "{{ item[1] }}"
+  delegate_to: "{{ item[0] }}"
+  with_nested:
+    - "{{ groups['all']|difference([inventory_hostname]) }}"
+    - [ "{{ ansible_user }}", "root"]
 
 - name: Git checkout gravity-sync
   ansible.builtin.git:
@@ -72,7 +98,7 @@
 - name: Move program to correct location
   ansible.builtin.copy:
     src: '{{ sync_dir.path }}.gs/gravity-sync'
-    dest: "/usr/local/bin/gravity-sync"
+    dest: "/usr/bin/gravity-sync"
     remote_src: yes
     mode: 0755
 
@@ -93,3 +119,13 @@
   ansible.builtin.shell: gravity-sync auto > /dev/null 2>&1
   async: 60
   poll: 5
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: start auto sync for gravity
+  ansible.builtin.shell: sudo gravity-sync auto > /dev/null 2>&1
+  async: 60
+  poll: 5
+  args:
+    executable: /bin/bash
+    warn: no
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
