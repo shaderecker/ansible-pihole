@@ -16,7 +16,7 @@ all:
     timezone: "Europe/London"
     static_dns: "1.1.1.1"
     pihole_container_name: pihole
-    pihole_image: "pihole/pihole:latest"
+    pihole_image: "pihole/pihole:2022.12.1"
     pihole_ftl_max_db_days: "180"
     pihole_webpassword: 't4f!VUry0@elCjUgKbti7JL^NvGPEh3d' # example value, change it and better use ansible-vault
     pihole_dns: "1.1.1.1;2606:4700:4700::1111"
