@@ -19,8 +19,6 @@ all:
     github_user_for_ssh_key: shaderecker # Change me to required value
     timezone: "Europe/London"
     static_dns: "1.1.1.1"
-    dnsmasq_listening: single
-    pihole_container_name: pihole
     pihole_image: "pihole/pihole:2022.12.1"
     pihole_ftl_max_db_days: "180"
     pihole_webpassword: Intranet # example value, change it and better use ansible-vault
@@ -37,3 +35,5 @@ all:
     install_docker_compose: false
     docker_compose_sha265: "sha256:eb65ae4a4dd4de7dc767935c2bc49e3641d265df1273ea8f577cadb6bd9b4ebf"
     gravity_sync_version: v4.0.4
+    dnsmasq_listening: single
+    pihole_container_name: pihole
