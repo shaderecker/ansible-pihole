@@ -1,4 +1,4 @@
-- name: Install sqlite3
+- name: Install requirements Debian
   apt:
     force_apt_get: true
     name:
@@ -7,7 +7,7 @@
   become: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Install sqlite3 CentOS
+- name: Install requirements CentOS
   yum:
     name:
       - sqlite

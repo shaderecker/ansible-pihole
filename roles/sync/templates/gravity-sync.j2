@@ -17,6 +17,7 @@ REMOTE_DOCKER_CONTAINER='{{ pihole_container_name }}'
 
 # Log location
 GS_SYSLOG_REDIRECT='{{ sync_log_dir.path }}sync.log'
+GS_SSH_PORT='{{ ansible_port }}'
 
 # HIDDEN FIGURES #############################
 # See https://github.com/vmstan/gravity-sync/wiki/Hidden-Figures
