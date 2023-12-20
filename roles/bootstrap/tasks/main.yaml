@@ -8,7 +8,6 @@
   user:
     name: "{{ ansible_user }}"
     password_lock: yes
-    become: true
 
 - name: bashrc for {{ ansible_user }}
   blockinfile:
