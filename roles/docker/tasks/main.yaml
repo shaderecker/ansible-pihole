@@ -19,7 +19,7 @@
   apt:
     force_apt_get: yes
     name:
-      - docker-ce:arm64
+      - docker-ce:armhf
       - python3-setuptools
       - python3-pip
     install_recommends: no
