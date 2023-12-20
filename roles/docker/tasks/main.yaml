@@ -47,6 +47,7 @@
 - name: Install Docker SDK for python
   pip:
     name: docker
+    executable: pip3
 
 - name: Add user to docker group
   user:
