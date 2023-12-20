@@ -54,6 +54,7 @@
     name: "{{ ansible_user }}"
     append: yes
     groups: docker
+    become: true
 
 - name: Enable Docker IPv6
   copy:
