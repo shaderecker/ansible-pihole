@@ -19,7 +19,7 @@
   ansible.builtin.command: chmod a+r /etc/apt/keyrings/docker.gpg
   become: true
 
-- name: Set up Docker's APT repository:
+- name: Set up Dockers APT repository
   ansible.builtin.command: echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/raspbian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   
 - name: Update apt packages
