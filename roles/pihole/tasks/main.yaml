@@ -40,7 +40,6 @@
       PIHOLE_DNS_: "{{ pihole_dns }}"
       DNSMASQ_LISTENING: "local"
       REV_SERVER: "{{ pihole_rev_server }}"
-      REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
       REV_SERVER_TARGET: "{{ pihole_rev_server_target }}"
       REV_SERVER_CIDR: "{{ pihole_rev_server_cidr }}"
       FTLCONF_MAXDBDAYS: "{{ pihole_ftl_max_db_days }}"
