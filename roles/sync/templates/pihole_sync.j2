@@ -30,7 +30,6 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
       docker start pihole
     fi
   fi
-fi
 
   RSYNC_WILDCARD=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/dnsmasq.d/02-cluster.vert-wildcard.conf $sync_dir)
   if [ $? -eq 0 ]; then
