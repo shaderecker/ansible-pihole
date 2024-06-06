@@ -94,3 +94,9 @@ sync_target: "{{ hostvars['pihole-1'].ansible_host }}"
 
 For syncing, `rsync` is used which will only transfer files if they contain changes.  
 Changes will trigger a docker container restart to apply the changes.  
+
+# My customizations
+
+This repo is slightly tweaked to contain my own home setup.
+
+- Inventory is encrypted with ansible vault. For all the example `ansible-playbook` commands above, you have to add `--ask-vault-pass`
