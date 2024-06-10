@@ -55,6 +55,12 @@
     log_options:
       max-size: "10m"
       max-file: "5"
+    capabilities:
+      - CAP_NET_BIND_SERVICE
+      - CAP_NET_RAW
+      - CAP_NET_ADMIN
+      - CAP_SYS_NICE
+      - CAP_CHOWN
 
 - name: Check pihole container
   uri:
