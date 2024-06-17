@@ -21,6 +21,27 @@
     execution_mode: "HA setup with keepalived"
   when: pihole_ha_mode
 
+- name: Create dnsmasq.d directory for DHCP config (HA mode)
+  file:
+    path: "/home/{{ ansible_user }}/pihole/dnsmasq.d"
+    owner: "root"
+    group: "root"
+    state: directory
+    mode: 0755
+  when:
+    - pihole_ha_mode
+    - dhcp_server
+
+- name: Set DHCP to give out HA mode IP
+  copy:
+    dest: "/home/{{ ansible_user }}/pihole/dnsmasq.d/03-pihole-dhcp-static-dns.conf"
+    owner: "root"
+    group: "root"
+    content: dhcp-option=6,{{pihole_local_ipv4}}
+  when:
+    - pihole_ha_mode
+    - dhcp_server
+
 - name: Determine Pi-hole host IPs (single mode)
   set_fact:
     pihole_local_ipv4: "{{ ansible_host }}"
