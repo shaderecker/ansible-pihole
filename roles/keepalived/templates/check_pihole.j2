@@ -4,7 +4,7 @@ set -e
 ## This script checks the health of the pihole container and enables/disables DHCP as needed.
 
 PIHOLE_DIR="{{ ansible_user_dir }}/pihole"
-DHCP_ENABLED="{{ dhcp_server }}"
+[ "{{ dhcp_server }}" = "true" ] && DHCP_ENABLED=0 || DHCP_ENABLED=1
 VIP="{{ pihole_vip_ipv4 }}"
 DHCP_START="{{ dhcp_start }}"
 DHCP_END="{{ dhcp_end }}"
