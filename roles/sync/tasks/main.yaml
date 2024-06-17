@@ -32,7 +32,7 @@
 
 - name: Schedule sync with cron
   ansible.builtin.cron:
-    hour: "2,14"
-    minute: "0"
+    hour: "*"
+    minute: "*/5"
     job: "{{ ansible_user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
     name: pihole-sync
