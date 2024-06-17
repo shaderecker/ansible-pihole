@@ -48,7 +48,7 @@ These roles are included:
     The options prefixed with `pihole_ftl_` are described in the official [Pi-hole FTL Configuration](https://docs.pi-hole.net/ftldns/configfile/)
   - The [`pihole_ha_mode`](inventory.yaml#L24) option is used to switch between HA or Single mode to determine the IPv4/IPv6 addresses for the Pi-hole services (bind IPs for Web/DNS, pi.hole DNS record) and is enabled by default.  
     ⚠️ Disable this if you don't intend to deploy a HA setup with keepalived.
-  - The [`dhcp_server`](inventory.yaml#L28) option and other options prefixed with `dhcp_` are for configuring Pihole's optional DHCP support.
+  - The [`dhcp_server`](inventory.yaml#L28) option and other options prefixed with `dhcp_` are for configuring Pihole's optional DHCP support. This is disabled by default. If you enable the DHCP server, consider a shorter sync cron interval [here](master/roles/sync/tasks/main.yaml#L33) to catch changes in dhcp leases. 
 
 ## `update-pihole.yaml`
 This playbook is for subsequent runs after the `bootstrap-pihole.yaml` playbook was run at least once.  
