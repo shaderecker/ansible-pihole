@@ -5,23 +5,30 @@ host_key_check="-o StrictHostKeyChecking=no"
 target="{{ ansible_user }}@{{ sync_target }}"
 sync_dir="{{ ansible_user_dir }}/{{ sync_dir.path }}"
 pihole_dir="{{ ansible_user_dir }}/pihole"
-dhcp_server="{{ dhcp_server }}
+dhcp_server="{{ dhcp_server }}"
+[ $(ip a | grep {{ sync_target }}) ] && am_master=0 || am_master=1 # If the sync target is on this host, we are the master (0).
 
-if [[ $(ip a | grep {{ sync_target }}) ]]; then
-  nice -n 19 sqlite3 $pihole_dir/pihole/gravity.db ".backup $sync_dir/gravity.dump"
-fi
-
-if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
-  sleep 60
-
-  RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$sync_dir/gravity.dump $sync_dir)
-  if [ $? -eq 0 ]; then
-    if [ -n "$RSYNC_GRAVITY" ]; then
-      docker stop pihole
-      sudo sqlite3 $pihole_dir/pihole/gravity.db ".restore $sync_dir/gravity.dump"
-      docker start pihole
+# If the gravity dump file is more than 12 hours old, sync it.
+if [[ -f $sync_dir/gravity.dump ]] && [[ $(find $sync_dir/gravity.dump -mmin +719) ]]; then 
+  # master generates a dump file.
+  if [[ $am_master -eq 0 ]]; then
+    nice -n 19 sqlite3 $pihole_dir/pihole/gravity.db ".backup $sync_dir/gravity.dump"
+  else
+    # not master waits for the dump, then rsyncs and imports it.
+    sleep 60
+    RSYNC_GRAVITY=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$sync_dir/gravity.dump $sync_dir)
+    if [ $? -eq 0 ]; then
+      if [ -n "$RSYNC_GRAVITY" ]; then
+        docker stop pihole
+        sudo sqlite3 $pihole_dir/pihole/gravity.db ".restore $sync_dir/gravity.dump"
+        docker start pihole
+      fi
     fi
   fi
+fi
+
+# not master syncs everything else.
+if [[ $am_master -eq 1 ]]; then
 
   RSYNC_DNS=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/custom.list $sync_dir)
   if [ $? -eq 0 ]; then
@@ -43,7 +50,6 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
       sudo cp --preserve=timestamps $sync_dir/02-cluster.vert-wildcard.conf $pihole_dir/dnsmasq.d
     fi
   fi
-
 
   RSYNC_LEASES=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/dhcp.leases $sync_dir)
   if [ $? -eq 0 ]; then
