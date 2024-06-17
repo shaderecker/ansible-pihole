@@ -5,6 +5,7 @@ host_key_check="-o StrictHostKeyChecking=no"
 target="{{ ansible_user }}@{{ sync_target }}"
 sync_dir="{{ ansible_user_dir }}/{{ sync_dir.path }}"
 pihole_dir="{{ ansible_user_dir }}/pihole"
+dhcp_server="{{ dhcp_server }}
 
 if [[ $(ip a | grep {{ sync_target }}) ]]; then
   nice -n 19 sqlite3 $pihole_dir/pihole/gravity.db ".backup $sync_dir/gravity.dump"
@@ -40,6 +41,25 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
   if [ $? -eq 0 ]; then
     if [ -n "$RSYNC_WILDCARD" ]; then
       sudo cp --preserve=timestamps $sync_dir/02-cluster.vert-wildcard.conf $pihole_dir/dnsmasq.d
+    fi
+  fi
+
+
+  RSYNC_LEASES=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/dhcp.leases $sync_dir)
+  if [ $? -eq 0 ]; then
+    if [ -n "$RSYNC_LEASES" ]; then
+      sudo cp --preserve=timestamps $sync_dir/dhcp.leases $pihole_dir/pihole
+    fi
+  fi
+
+  if ! [ -d ${pihole_dir}/dnsmasq.d ]; then
+    mkdir -p ${pihole_dir}/dnsmasq.d
+  fi
+
+  RSYNC_DNSMASQ=$(rsync -a --info=name -e "ssh $key $host_key_check" --exclude '02-pihole-dhcp.conf' $target:$pihole_dir/dnsmasq.d/* $sync_dir/dnsmasq.d/)
+  if [ $? -eq 0 ]; then
+    if [ -n "$RSYNC_DNSMASQ" ]; then
+      sudo cp --preserve=timestamps $sync_dir/dnsmasq.d/* $pihole_dir/dnsmasq.d
     fi
   fi
 fi
