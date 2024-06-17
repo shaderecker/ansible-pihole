@@ -2,18 +2,17 @@
 set -e
 
 ## This script checks the health of the pihole container and enables/disables DHCP as needed.
-
-PIHOLE_DIR="{{ ansible_user_dir }}/pihole"
+PIHOLE_DIR="{{ ansible_user_dir }}}}/pihole"
 [ "{{ dhcp_server }}" = "true" ] && DHCP_ENABLED=0 || DHCP_ENABLED=1
 VIP="{{ pihole_vip_ipv4 }}"
 DHCP_START="{{ dhcp_start }}"
 DHCP_END="{{ dhcp_end }}"
-DHCP_GATEWAY="{{ dhcp_gateway }}"
+DHCP_GATEWAY="{{ dhcp_router }}"
 DHCP_DOMAIN="{{ dhcp_domain }}"
 DHCP_LEASE_TIME="{{ dhcp_lease_time }}"
 
 # Check if the pihole container is healthy (0) or not (1).
-[ "$(docker inspect -f "{{.State.Health.Status}}" pihole)" = "healthy" ] && HEALTHY=0 || HEALTHY=1
+[ "$(docker inspect -f "{{ '{{' }}.State.Health.Status{{ '}}' }}" pihole)" = "healthy" ] && HEALTHY=0 || HEALTHY=1
 
 # If the container is not healthy, exit 1.
 if ! [ ${HEALTHY} ]; then
