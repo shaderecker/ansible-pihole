@@ -15,7 +15,7 @@ DHCP_LEASE_TIME="{{ dhcp_lease_time }}"
 [ "$(docker inspect -f "{{ '{{' }}.State.Health.Status{{ '}}' }}" pihole)" = "healthy" ] && HEALTHY=0 || HEALTHY=1
 
 # If the container is not healthy, exit 1.
-if ! [ ${HEALTHY} -eq 1 ]; then
+if [ ${HEALTHY} -eq 1 ]; then
   exit ${HEALTHY}
 fi
 
