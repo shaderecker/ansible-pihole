@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+
+## This script checks the health of the pihole container and enables/disables DHCP as needed.
+PIHOLE_DIR="/home/{{ ansible_user }}/pihole"
+[ "{{ dhcp_server }}" = "true" ] && DHCP_ENABLED=0 || DHCP_ENABLED=1 # enabled=0, disabled=1
+VIP="{{ pihole_vip_ipv4 }}"
+DHCP_START="{{ dhcp_start }}"
+DHCP_END="{{ dhcp_end }}"
+DHCP_GATEWAY="{{ dhcp_router }}"
+DHCP_DOMAIN="{{ dhcp_domain }}"
+DHCP_LEASE_TIME="{{ dhcp_lease_time }}"
+
+# Check if the pihole container is healthy (0) or not (1).
+[ "$(docker inspect -f "{{ '{{' }}.State.Health.Status{{ '}}' }}" pihole)" = "healthy" ] && HEALTHY=0 || HEALTHY=1
+
+# If the container is not healthy, exit 1.
+if [ ${HEALTHY} -eq 1 ]; then
+  exit ${HEALTHY}
+fi
+
+# If DHCP is not enabled, or we don't own the virtual IP
+if [ ${DHCP_ENABLED} -eq 1 ] || ! /usr/sbin/ip a |grep -q ${VIP} ; then
+    # Ensure DHCP is disabled.
+    if [ -f ${PIHOLE_DIR}/dnsmasq.d/02-pihole-dhcp.conf ]; then
+        /usr/bin/docker exec -d pihole /usr/local/bin/pihole -a disabledhcp
+    fi
+    # Exit with the health status of the container (0).
+    exit ${HEALTHY}
+fi
+
+# Ensure DHCP is enabled.
+if ! [ -f ${PIHOLE_DIR}/dnsmasq.d/02-pihole-dhcp.conf ]; then
+    /usr/bin/docker exec -d pihole /usr/local/bin/pihole -a enabledhcp "${DHCP_START}" "${DHCP_END}" "${DHCP_GATEWAY}" "${DHCP_LEASE_TIME}" "${DHCP_DOMAIN}"
+fi
+
+# Exit with the health status of the container (0).
+exit ${HEALTHY}

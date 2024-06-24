@@ -14,10 +14,10 @@
     force_apt_get: yes
     name: keepalived
 
-- name: Copy check_pihole.sh
-  copy:
+- name: Configure check_pihole.sh
+  template:
     dest: /etc/keepalived/check_pihole.sh
-    src: check_pihole.sh
+    src: check_pihole.j2
     mode: 0755
 
 - name: Configure keepalived
