@@ -13,7 +13,7 @@ all:
     github_user_for_ssh_key: shaderecker
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
-    pihole_image: "pihole/pihole:2024.06.0"
+    pihole_image: "pihole/pihole:2024.07.0"
     pihole_ftl_max_db_days: "180"
     pihole_webpassword: Intranet # example value, change it and better use ansible-vault
     pihole_dns: "1.1.1.1;2606:4700:4700::1111"
