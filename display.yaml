@@ -1,0 +1,5 @@
+- name: Retrieve host vars
+  hosts: all
+  tasks:
+    - debug:
+        var=hostvars[inventory_hostname]

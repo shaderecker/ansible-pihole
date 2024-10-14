@@ -2,16 +2,22 @@ all:
   hosts:
     pihole-1:
       ansible_host: 192.168.178.45
+      ansible_port: 22
       priority: 101
+      keepalive_role: MASTERS
     pihole-2:
       ansible_host: 192.168.178.46
+      ansible_port: 22
       priority: 100
+      keepalive_role: BACKUP
   vars:
     ansible_user: pi
     ansible_password: raspberry # only used on first run
+    password_lock: true # Change to false if you still wish to login via passwd auth
+    ansible_user_home_dir: /home/{{ ansible_user }}
     ansible_python_interpreter: /usr/bin/python3
-    github_user_for_ssh_key: shaderecker
-    timezone: "Europe/Berlin"
+    github_user_for_ssh_key: shaderecker # Change me to required value
+    timezone: "Europe/London"
     static_dns: "1.1.1.1"
     pihole_image: "pihole/pihole:2022.12.1"
     pihole_ftl_max_db_days: "180"
@@ -25,3 +31,9 @@ all:
     pihole_vip_ipv4: "192.168.178.10/24"
     pihole_vip_ipv6: "fd00::10/64"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
+    docker_compose_version: "v2.11.2"
+    install_docker_compose: false
+    docker_compose_sha265: "sha256:eb65ae4a4dd4de7dc767935c2bc49e3641d265df1273ea8f577cadb6bd9b4ebf"
+    gravity_sync_version: v4.0.4
+    dnsmasq_listening: single
+    pihole_container_name: pihole

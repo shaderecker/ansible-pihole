@@ -1,5 +1,6 @@
 - name: Enable syncing
   hosts: all
+  become: true
   serial: 1
   roles:
     - sync

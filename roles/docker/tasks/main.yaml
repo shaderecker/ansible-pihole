@@ -1,37 +1,90 @@
-- name: Install dependencies
+- name: Install dependencies Debain
   apt:
-    force_apt_get: yes
+    force_apt_get: true
     name:
       - gnupg2
       - software-properties-common
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Add Docker apt key
+- name: Add Docker apt key Debian family
   apt_key:
     url: https://download.docker.com/linux/raspbian/gpg
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Add Docker apt repository
+- name: Add Docker apt repository Raspbian
   apt_repository:
     repo: deb https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable
     filename: docker
+  when: ansible_distribution == 'Debian'and ansible_architecture == 'aarch64'
 
-- name: Install Docker
-  apt:
-    force_apt_get: yes
+- name: Add Docker apt repository Ubuntu
+  apt_repository:
+    repo: deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+    filename: docker
+  when: ansible_distribution == 'Ubuntu'
+
+- name: "Install dependencies Redhat"
+  ansible.builtin.yum:
     name:
-      - docker-ce:armhf
+      - yum-utils
+      - python3-pip
+    state: present
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Add signing key
+  ansible.builtin.rpm_key:
+    key: "https://download.docker.com/linux/centos/gpg"
+    state: present
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Add Docker Redhat
+  ansible.builtin.yum_repository:
+    name: Docker-CE
+    description: "Docker-CE Repo"
+    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+    enabled: true
+    gpgcheck: true
+    gpgkey: "https://download.docker.com/linux/centos/gpg"
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install Docker Debain
+  apt:
+    force_apt_get: true
+    name:
+      - docker-ce
       - python3-setuptools
       - python3-pip
-    install_recommends: no
+    install_recommends: false
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install Docker Rocky
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Since yum doesn't like using notify because yum we have to this instead
+- name: Start docker service started, if not started
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Install Docker SDK for python
   pip:
     name: docker
 
 - name: Add user to docker group
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
-    append: yes
+    append: true
     groups: docker
 
 - name: Enable Docker IPv6
@@ -44,6 +97,15 @@
         "fixed-cidr-v6": "2001:db8:1::/64"
       }
   notify: Restart Docker
+
+- name: "Install docker-compose"
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ ansible_architecture }}
+    dest: "/usr/local/bin/docker-compose"
+    mode: 'u+x,g+x'
+    group: "docker"
+    checksum: "{{ docker_compose_sha265 }}"
+  when: install_docker_compose == true
 
 - name: Flush handlers
   meta: flush_handlers

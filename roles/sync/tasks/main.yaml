@@ -1,38 +1,131 @@
-- name: Install sqlite3
+- name: Install requirements Debian
   apt:
-    force_apt_get: yes
-    name: sqlite3
-  become: yes
+    force_apt_get: true
+    name:
+      - sqlite3
+      - git
+  become: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install requirements Rocky
+  yum:
+    name:
+      - sqlite
+      - rsync
+      - git
+    state: latest
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Create folders for tasks
+- name: Create gravity sync configuration folder
+  ansible.builtin.file:
+    path: /etc/gravity-sync/
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  register: sync_dir
+
+- name: Create gravity sync log folder
+  ansible.builtin.file:
+    path: /var/log/gravity-sync/
+    state: directory
+    owner: "root"
+    group: "root"
+  register: sync_log_dir
+
+- name: Create root ssh folder
+  ansible.builtin.file:
+    path: "/root/.ssh/"
+    owner: "root"
+    group: "root"
+    mode: '0755'
+    state: directory
+  register: root_ssh_loc
 
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
     comment: pihole-sync-{{ inventory_hostname }}
-    path: .ssh/id_rsa_sync
+    path: "{{ sync_dir.path }}/gravity-sync.rsa"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0600'
   register: ssh_key
+
+- name: Create known host file for ansible user
+  ansible.builtin.file:
+    path: "{{ ansible_user_home_dir }}/.ssh/known_hosts"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+    state: touch
+  register: known_hosts_user
+
+- name: Create known host file for root user
+  ansible.builtin.file:
+    path: "{{root_ssh_loc.path }}known_hosts"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+    state: touch
+  register: known_hosts_root
+
+- name: Ensure servers are present in known_hosts file
+  known_hosts:
+    name: "{{ hostvars[item[0]].ansible_host }}"
+    state: present
+    key: "{{ lookup('pipe', 'ssh-keyscan {{ hostvars[item[0]].ansible_host }}') }}"
+    hash_host: true
+    path: "{{ item[1].dest }}"
+  with_nested:
+    - "{{ groups['all']|difference([inventory_hostname]) }}"
+    - [ "{{ known_hosts_root }}", "{{ known_hosts_user }}" ]
 
 - name: Add key to authorized_keys on all other nodes
   ansible.posix.authorized_key:
     key: "{{ ssh_key.public_key }}"
-    user: "{{ ansible_user }}"
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['all']|difference([inventory_hostname]) }}"
+    user: "{{ item[1] }}"
+  delegate_to: "{{ item[0] }}"
+  with_nested:
+    - "{{ groups['all']|difference([inventory_hostname]) }}"
+    - [ "{{ ansible_user }}", "root"]
 
-- name: Create sync folder
-  file:
-    path: pihole_sync
-    state: directory
+- name: Git checkout gravity-sync
+  ansible.builtin.git:
+    repo: 'https://github.com/vmstan/gravity-sync.git'
+    dest: '{{ sync_dir.path }}.gs'
+    version: "{{ gravity_sync_version }}"
+
+- name: Move program to correct location
+  ansible.builtin.copy:
+    src: '{{ sync_dir.path }}.gs/gravity-sync'
+    dest: "/usr/bin/gravity-sync"
+    remote_src: yes
     mode: 0755
-  register: sync_dir
+
+- set_fact:
+    peerip_addr: "{{ groups['all'] | map('extract', hostvars, 'ansible_host') | difference([ansible_default_ipv4.address]) | list }}"
+  run_once: true
 
 - name: Copy sync script
   template:
-    dest: "{{ sync_dir.path }}/pihole_sync.sh"
-    src: pihole_sync.j2
-    mode: 0755
+    dest: /tmp/gravity-sync.conf
+    src: gravity-sync.j2
+    mode: 0644
 
-- name: Schedule sync with cron
-  ansible.builtin.cron:
-    hour: "2,14"
-    minute: "0"
-    job: "{{ ansible_user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
-    name: pihole-sync
+- name: Remove ansible junk from gravity config file & put into correct place
+  ansible.builtin.shell: cat /tmp/gravity-sync.conf | sed 's/[][]//g' | sed "s/['\]//g" > "{{ sync_dir.path }}/gravity-sync.conf"
+
+- name: start auto sync for gravity
+  ansible.builtin.shell: gravity-sync auto > /dev/null 2>&1
+  async: 60
+  poll: 5
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: start auto sync for gravity
+  ansible.builtin.shell: sudo gravity-sync auto > /dev/null 2>&1
+  async: 60
+  poll: 5
+  args:
+    executable: /bin/bash
+    warn: no
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'

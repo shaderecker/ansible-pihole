@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>dns</short>
+ <description>PiHole DNS Listener Service</description>
+ <port protocol="tcp" port="53" />
+ <port protocol="udp" port="53" />
+</service>

@@ -19,26 +19,26 @@
     pihole_local_ipv4: "{{ pihole_vip_ipv4.split('/')[0] }}"
     pihole_local_ipv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
     execution_mode: "HA setup with keepalived"
-  when: pihole_ha_mode
+  when: pihole_ha_mode == true
 
 - name: Determine Pi-hole host IPs (single mode)
   set_fact:
     pihole_local_ipv4: "{{ ansible_host }}"
     pihole_local_ipv6: "{{ ipv6 }}"
     execution_mode: "single node setup"
-  when: not pihole_ha_mode
+  when: pihole_ha_mode == false
 
 - name: Start/Update pihole container
   docker_container:
-    name: pihole
+    name: "{{ pihole_container_name }}"
     image: "{{ pihole_image }}"
-    pull: yes
+    pull: true
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
       WEBPASSWORD: "{{ pihole_webpassword }}"
       PIHOLE_DNS_: "{{ pihole_dns }}"
-      DNSMASQ_LISTENING: "local"
+      DNSMASQ_LISTENING: "{{ dnsmasq_listening }}"
       REV_SERVER: "{{ pihole_rev_server }}"
       REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
       REV_SERVER_TARGET: "{{ pihole_rev_server_target }}"
@@ -56,9 +56,48 @@
       max-size: "10m"
       max-file: "5"
 
+- name: Stop and disable resolver
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+  when: ansible_distribution == 'Ubuntu'
+
+- block:
+  - name: Adding DNS service for firewalld
+    copy:
+      src: dns.xml
+      dest: /etc/firewalld/services/dns.xml
+      owner: root
+      group: root
+
+  - name: Default firewalld rules
+    ansible.posix.firewalld:
+      service: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+      zone: public
+    with_items:
+      - http
+      - https
+      - dns
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Bootps firewalld rule
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+    zone: public
+  with_items:
+    - bootps
+  when: pihole_rev_server == true
+
 - name: Check pihole container
   uri:
-    url: http://localhost
+    url: http://localhost/admin
   register: result
   until: result.status == 200
   retries: 5
@@ -66,7 +105,7 @@
 
 - name: Remove old image versions
   docker_prune:
-    images: yes
+    images: true
     images_filters:
       dangling: false
 

@@ -1,0 +1,23 @@
+######### REQUIRED SETTINGS #########
+
+REMOTE_HOST='{{ peerip_addr }}'
+REMOTE_USER='{{ ansible_user }}'
+
+# Pi-hole Folder/File Customization - Only need to be customized when using containers
+LOCAL_PIHOLE_DIRECTORY='{{ ansible_user_home_dir }}/pihole/pihole'
+REMOTE_PIHOLE_DIRECTORY='{{ ansible_user_home_dir }}/pihole/pihole'
+LOCAL_DNSMASQ_DIRECTORY='{{ ansible_user_home_dir }}/pihole/dnsmasq.d/'
+REMOTE_DNSMASQ_DIRECTORY='{{ ansible_user_home_dir }}/pihole/dnsmasq.d/'
+LOCAL_FILE_OWNER='999:999'
+REMOTE_FILE_OWNER='999:999'
+
+# Pi-hole Docker/Podman container name - Docker will pattern match anything set below
+LOCAL_DOCKER_CONTAINER='{{ pihole_container_name }}'
+REMOTE_DOCKER_CONTAINER='{{ pihole_container_name }}'
+
+# Log location
+GS_SYSLOG_REDIRECT='{{ sync_log_dir.path }}sync.log'
+GS_SSH_PORT='{{ ansible_port }}'
+
+# HIDDEN FIGURES #############################
+# See https://github.com/vmstan/gravity-sync/wiki/Hidden-Figures

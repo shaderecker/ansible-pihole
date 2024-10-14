@@ -9,10 +9,34 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- name: Install keepalived
+- name: Install keepalived Debian
   apt:
-    force_apt_get: yes
+    force_apt_get: true
     name: keepalived
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install keepalived Rocky
+  yum:
+    name:
+      - kernel-headers
+      - kernel-devel
+      - keepalived
+    state: present
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Change the keepalived_t domain to permissive
+  community.general.selinux_permissive:
+    name: keepalived_t
+    permissive: true
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Since yum doesn't like using notify because yum we have to this instead
+- name: Start service keepalived started, if not started
+  ansible.builtin.service:
+    name: keepalived
+    state: stopped
+    enabled: true
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Copy check_pihole.sh
   copy:
@@ -20,12 +44,20 @@
     src: check_pihole.sh
     mode: 0755
 
+# Finds the IP_ADDRS of the group and removes the ansible_host from it's peer list
+- set_fact:
+    peerip_addr: "{{ groups['all'] | map('extract', hostvars, 'ansible_host') | difference([ansible_default_ipv4.address]) | list }}"
+  run_once: true
+
 - name: Configure keepalived
   template:
-    dest: /etc/keepalived/keepalived.conf
+    dest: /tmp/keepalived.conf
     src: keepalived.j2
     mode: 0644
   notify: Restart keepalived service
+
+- name: Remove ansible junk from config file for keepalive
+  ansible.builtin.shell: cat /tmp/keepalived.conf | sed 's/[][]//g' | sed "s/['\]//g" > /etc/keepalived/keepalived.conf
 
 - name: Flush handlers
   meta: flush_handlers
