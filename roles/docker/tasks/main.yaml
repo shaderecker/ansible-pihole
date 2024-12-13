@@ -25,27 +25,27 @@
   when: ansible_distribution == 'Ubuntu'
 
 - name: "Install dependencies Redhat"
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name:
-      - yum-utils
+      - dnf-utils
       - python3-pip
     state: present
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Add signing key
   ansible.builtin.rpm_key:
-    key: "https://download.docker.com/linux/centos/gpg"
+    key: "https://download.docker.com/linux/rhel/gpg"
     state: present
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Add Docker Redhat
   ansible.builtin.yum_repository:
-    name: Docker-CE
+    name: docker-ce
     description: "Docker-CE Repo"
-    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+    baseurl: https://download.docker.com/linux/rhel/$releasever/$basearch/stable
     enabled: true
     gpgcheck: true
-    gpgkey: "https://download.docker.com/linux/centos/gpg"
+    gpgkey: "https://download.docker.com/linux/rhel/gpg"
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Install Docker Debain
@@ -59,7 +59,7 @@
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install Docker Rocky
-  yum:
+  ansible.builtin.dnf:
     name:
       - docker-ce
       - docker-ce-cli
@@ -97,15 +97,6 @@
         "fixed-cidr-v6": "2001:db8:1::/64"
       }
   notify: Restart Docker
-
-- name: "Install docker-compose"
-  get_url:
-    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ ansible_architecture }}
-    dest: "/usr/local/bin/docker-compose"
-    mode: 'u+x,g+x'
-    group: "docker"
-    checksum: "{{ docker_compose_sha265 }}"
-  when: install_docker_compose == true
 
 - name: Flush handlers
   meta: flush_handlers

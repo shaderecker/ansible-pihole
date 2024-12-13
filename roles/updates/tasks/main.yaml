@@ -8,7 +8,7 @@
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: upgrade yum packages
-  yum:
+  ansible.builtin.dnf:
     name: '*'
     state: latest
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
