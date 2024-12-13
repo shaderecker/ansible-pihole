@@ -7,6 +7,7 @@
     - bootstrap
     - updates
     - sshd
+    - keepalived
     - docker
     - pihole
     - start_keepalived
