@@ -21,6 +21,7 @@
       - kernel-headers
       - kernel-devel
       - keepalived
+      - policycoreutils-python-utils
     state: present
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
