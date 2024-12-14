@@ -4,12 +4,12 @@ all:
       ansible_host: 192.168.56.4
       ansible_port: 22
       priority: 101
-      keepalive_role: MASTERS
+      keepalive_role: BACKUP
     pihole-02:
       ansible_host: 192.168.56.5
       ansible_port: 22
       priority: 100
-      keepalive_role: BACKUP
+      keepalive_role: MASTER
   vars:
     ansible_user: vagrant
     ansible_password: vagrant # only used on first run
@@ -34,3 +34,4 @@ all:
     gravity_sync_version: v4.0.7
     dnsmasq_listening: single
     pihole_container_name: pihole
+    vagrant_env: true
