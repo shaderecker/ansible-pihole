@@ -3,8 +3,3 @@
     name: systemd-resolved
     state: stopped
     enabled: false
-
-- name: Restart network
-  service:
-    name: network
-    state: restarted

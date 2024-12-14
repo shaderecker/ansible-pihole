@@ -6,12 +6,6 @@
     state: directory
     mode: 0755
 
-- name: Get ethernet interface names to be used later for enabling ipv6
-  shell: "set -o pipefail && nmcli connection show | grep ethernet | awk '{print $1}'"
-  changed_when: false
-  register: ethernet_interface_name
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
-
 - name:  Enabled IPv6 in Network Manager for the main ethernet device
   community.general.nmcli:
     type: ethernet
@@ -19,9 +13,7 @@
     method6: auto
     state: present
     conn_reload: true
-  notify:
-    - Restart network
-  with_items: "{{ ethernet_interface_name.stdout_lines }}"
+  with_items: "{{ ethernet_list }}"
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 
