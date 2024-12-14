@@ -7,7 +7,7 @@
     upgrade: dist
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: upgrade yum packages
+- name: upgrade dnf packages
   ansible.builtin.dnf:
     name: '*'
     state: latest

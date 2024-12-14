@@ -6,17 +6,6 @@
     state: directory
     mode: 0755
 
-- name:  Enabled IPv6 in Network Manager for the main ethernet device
-  community.general.nmcli:
-    type: ethernet
-    conn_name: "{{ item }}"
-    method6: auto
-    state: present
-    conn_reload: true
-  with_items: "{{ ethernet_list }}"
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
-
-
 - name: Determine Pi-hole host IPs (HA mode)
   set_fact:
     pihole_local_ipv4: "{{ pihole_vip_ipv4.split('/')[0] }}"

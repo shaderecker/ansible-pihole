@@ -34,6 +34,3 @@ all:
     gravity_sync_version: v4.0.7
     dnsmasq_listening: single
     pihole_container_name: pihole
-    ethernet_list:
-      - eth0
-      - eth1
