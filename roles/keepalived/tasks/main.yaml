@@ -2,9 +2,18 @@
   blockinfile:
     path: /etc/sysctl.conf
     block: |
-      net.ipv4.ip_nonlocal_bind = 1
+      net.ipv4.ip_nonlocal_bind=1
+      net.ipv4.ip_forward = 1
+      net.nf_conntrack_max = 4194304
       net.ipv6.ip_nonlocal_bind = 1
   notify: Reload sysctl config
+
+### Add in firewall rules for vrrp protocol
+- name: Add VRRP protocol to firewall
+  ansible.posix.firewalld:
+    rich_rule: rule protocol value="vrrp" accept
+    permanent: true
+    state: enabled
 
 - name: Flush handlers
   meta: flush_handlers
@@ -59,6 +68,14 @@
 
 - name: Remove ansible junk from config file for keepalive
   ansible.builtin.shell: cat /tmp/keepalived.conf | sed 's/[][]//g' | sed "s/['\]//g" > /etc/keepalived/keepalived.conf
+
+#Fixes issues with eth0 being used for the vagrant vm access interfering with the code pick up of the primary interface
+- name: vagrant test env support
+  ansible.builtin.replace:
+    path: /etc/keepalived/keepalived.conf
+    regexp: 'eth0'
+    replace: 'eth1'
+  when: vagrant_env == true and ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Flush handlers
   meta: flush_handlers
