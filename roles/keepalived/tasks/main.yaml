@@ -14,6 +14,7 @@
     rich_rule: rule protocol value="vrrp" accept
     permanent: true
     state: enabled
+  notify: Restart firewall config
 
 - name: Flush handlers
   meta: flush_handlers
@@ -54,10 +55,24 @@
     src: check_pihole.sh
     mode: 0755
 
-# Finds the IP_ADDRS of the group and removes the ansible_host from it's peer list
-- set_fact:
-    peerip_addr: "{{ groups['all'] | map('extract', hostvars, 'ansible_host') | difference([ansible_default_ipv4.address]) | list }}"
-  run_once: true
+# Finds the IP_ADDRS of the group and removes the ansible_host ip's from it's peer list
+- name: Find Local IP Addresses
+  set_fact:
+    local_ips: "{{ ansible_all_ipv4_addresses + ansible_all_ipv6_addresses }}"
+
+- name: Create a list of peer IPs excluding local IPs and ensure /24 suffix
+  set_fact:
+    peer_list: >-
+      {{ groups['all'] 
+         | map('extract', hostvars, 'ansible_host') 
+         | difference(local_ips) 
+         | map('regex_replace', '^(.*?)(/\\d+)?$', '\g<1>/24') 
+         | list }}
+
+# Step 3: Debug the peer_list
+- name: Debug peer_list
+  debug:
+    msg: "Peer IPs with /24 for host {{ inventory_hostname }}: {{ peer_list }}"
 
 - name: Configure keepalived
   template:

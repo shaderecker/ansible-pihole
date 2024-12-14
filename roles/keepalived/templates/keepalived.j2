@@ -16,8 +16,10 @@ vrrp_script check_pihole {
 
 vrrp_sync_group PIHOLE {
     group {
-        PIHOLE-IPv4
-        PIHOLE-IPv6
+        PIHOLE-IPv4 
+        {% if vagrant_env == false %}
+        PIHOLE-IPv6 
+        {% endif %}
     }
 
     track_script {
@@ -34,7 +36,7 @@ vrrp_instance PIHOLE-IPv4 {
     preempt_delay 900
     unicast_scr {{ ansible_default_ipv4.interface }}
     unicast_peer {
-        {{ peerip_addr }}/24
+        {{ peer_list }}
     }
 
     virtual_ipaddress {

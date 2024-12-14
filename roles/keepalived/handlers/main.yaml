@@ -5,3 +5,8 @@
   service:
     name: keepalived
     state: restarted
+
+- name: Restart firewall config
+  ansible.builtin.service:
+    name: firewalld
+    state: reloaded
