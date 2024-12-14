@@ -18,7 +18,7 @@ vrrp_sync_group PIHOLE {
     group {
         PIHOLE-IPv4 
         {% if vagrant_env == false %}
-        PIHOLE-IPv6 
+        PIHOLE-IPv6
         {% endif %}
     }
 
