@@ -8,7 +8,7 @@
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install requirements Rocky
-  yum:
+  ansible.builtin.dnf:
     name:
       - sqlite
       - rsync
@@ -125,7 +125,4 @@
   ansible.builtin.shell: sudo gravity-sync auto > /dev/null 2>&1
   async: 60
   poll: 5
-  args:
-    executable: /bin/bash
-    warn: no
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
