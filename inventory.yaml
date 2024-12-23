@@ -3,12 +3,12 @@ all:
     pihole-01:
       ansible_host: 192.168.56.4
       ansible_port: 22
-      priority: 100
+      priority: 110
       keepalive_role: MASTER
     pihole-02:
       ansible_host: 192.168.56.5
       ansible_port: 22
-      priority: 101
+      priority: 100
       keepalive_role: BACKUP
   vars:
     ansible_user: vagrant
