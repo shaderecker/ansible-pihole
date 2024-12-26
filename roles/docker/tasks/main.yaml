@@ -29,6 +29,7 @@
     name:
       - dnf-utils
       - python3-pip
+      - bind-utils
     state: present
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 

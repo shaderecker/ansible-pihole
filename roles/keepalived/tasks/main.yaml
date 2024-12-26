@@ -4,8 +4,8 @@
     block: |
       net.ipv4.ip_nonlocal_bind=1
       net.ipv4.ip_forward = 1
-      net.nf_conntrack_max = 4194304
-      net.ipv6.ip_nonlocal_bind = 1
+      #net.nf_conntrack_max = 4194304
+      #net.ipv6.ip_nonlocal_bind = 1
   notify: Reload sysctl config
 
 ### Add in firewall rules for vrrp protocol

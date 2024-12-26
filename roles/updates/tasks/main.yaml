@@ -1,5 +1,5 @@
 - name: Update apt packages
-  apt:
+  ansible.builtin.apt:
     force_apt_get: true
     autoclean: true
     autoremove: true
