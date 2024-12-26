@@ -1,0 +1,23 @@
+---
+# molecule/default/verify.yml
+- name: Verify Configuration
+  hosts: all
+  tasks:
+    #- name: Verify Pi-hole Service
+    #  command: systemctl status pihole-FTL
+    #  register: pihole_status
+    
+    #- name: Assert Pi-hole Service is Running
+    #  assert:
+    #    that:
+    #      - "pihole_status.rc == 0"
+
+    - name: Test DNS Resolution
+      command: dig +short @192.168.56.10 google.com
+      register: dns_test
+      failed_when: dns_test.stdout == ""
+
+    - name: Assert DNS Resolution is Working
+      assert:
+        that:
+          - "'216.58' in dns_test.stdout"

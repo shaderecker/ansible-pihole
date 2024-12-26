@@ -1,0 +1,8 @@
+---
+# molecule/default/destroy.yml
+- name: Destroy VMs
+  hosts: localhost
+  tasks:
+    - name: Destroy Vagrant Instances
+      command: vagrant destroy -f
+

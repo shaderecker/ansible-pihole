@@ -1,0 +1,10 @@
+---
+# molecule/default/prepare.yml
+- name: Prepare Instances
+  hosts: all
+  tasks:
+    - name: Update and Install Python
+      ansible.builtin.apt:
+        update_cache: yes
+        name: python3
+        state: present

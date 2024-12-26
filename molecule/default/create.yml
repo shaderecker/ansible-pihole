@@ -1,0 +1,7 @@
+---
+# molecule/default/create.yml
+- name: Create VMs
+  hosts: localhost
+  tasks:
+    - name: Create Vagrant Instances
+      command: vagrant up

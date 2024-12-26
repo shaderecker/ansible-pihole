@@ -1,0 +1,55 @@
+---
+# molecule/default/molecule.yml
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+platforms:
+  - name: vagrant-pihole-01
+    box: luminositylabsllc/rockylinux9
+    hostname: vagrant-pihole-01
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.56.4
+    memory: 2048
+    cpus: 2
+  - name: vagrant-pihole-02
+    box: luminositylabsllc/rockylinux9
+    hostname: vagrant-pihole-02
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.56.5
+        memory: 2048
+    cpus: 2
+
+provisioner:
+  name: ansible
+  options:
+    vvv: true
+  connection_options:
+    ansible_ssh_user: vagrant
+    ansible_password: vagrant
+    ansible_become: true
+  inventory:
+    links:
+      hosts: inventory.yml
+  #playbooks:
+  #  converge: ../../bootstrap-pihole.yaml 
+  env:
+    ANSIBLE_ROLES_PATH: ../../roles/
+verifier:
+  name: ansible
+scenario:
+  name: default
+  test_sequence:
+    - dependency
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
+

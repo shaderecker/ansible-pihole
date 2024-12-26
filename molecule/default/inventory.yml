@@ -1,11 +1,11 @@
 all:
   hosts:
-    pihole-01:
+    vagrant-pihole-01:
       ansible_host: 192.168.56.4
       ansible_port: 22
       priority: 110
       keepalive_role: MASTER
-    pihole-02:
+    vagrant-pihole-02:
       ansible_host: 192.168.56.5
       ansible_port: 22
       priority: 100
