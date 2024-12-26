@@ -62,13 +62,6 @@
   when: ansible_distribution == 'Ubuntu'
 
 - block:
-  - name: Adding DNS service for firewalld
-    copy:
-      src: dns.xml
-      dest: /etc/firewalld/services/dns.xml
-      owner: root
-      group: root
-
   - name: Default firewalld rules
     ansible.posix.firewalld:
       service: "{{ item }}"
