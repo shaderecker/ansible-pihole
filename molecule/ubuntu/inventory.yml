@@ -1,0 +1,37 @@
+all:
+  hosts:
+    vagrant-pihole-01:
+      ansible_host: 192.168.56.4
+      ansible_port: 22
+      priority: 110
+      keepalive_role: MASTER
+    vagrant-pihole-02:
+      ansible_host: 192.168.56.5
+      ansible_port: 22
+      priority: 100
+      keepalive_role: BACKUP
+  vars:
+    ansible_user: vagrant
+    ansible_password: vagrant # only used on first run
+    password_lock: false # Change to false if you still wish to login via passwd auth
+    ansible_user_home_dir: /home/{{ ansible_user }}
+    ansible_python_interpreter: /usr/bin/python3
+    github_user_for_ssh_key: steveyminecraft # Change me to required value
+    timezone: "Europe/London"
+    static_dns: "1.1.1.1"
+    pihole_image: "pihole/pihole:2024.07.0"
+    pihole_ftl_max_db_days: "180"
+    pihole_webpassword: Intranet # example value, change it and better use ansible-vault
+    pihole_dns: "1.1.1.1;2606:4700:4700::1111"
+    pihole_rev_server: "true"
+    pihole_rev_server_domain: "coalhill.zz"
+    pihole_rev_server_target: "192.168.56.1"
+    pihole_rev_server_cidr: "192.168.56.11/24"
+    pihole_ha_mode: true
+    pihole_vip_ipv4: "192.168.56.10/24"
+    pihole_vip_ipv6: "fd00::10/64"
+    sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
+    gravity_sync_version: v4.0.7
+    dnsmasq_listening: single
+    pihole_container_name: pihole
+    vagrant_env: true

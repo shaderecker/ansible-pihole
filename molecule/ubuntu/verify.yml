@@ -21,3 +21,4 @@
       assert:
         that:
           - dns_test.stdout | regex_search('216\\.58\\.|172\\.217\\.|142\\.250\\.')
+

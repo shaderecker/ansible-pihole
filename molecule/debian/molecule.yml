@@ -1,16 +1,18 @@
 ---
-# molecule/default/molecule.yml
+# molecule/debain/molecule.yml
 dependency:
   name: galaxy
   options:
     role-file: requirements.yml
+    roles-path: molecule/debian/roles
+    force: true
 driver:
   name: vagrant
   provider:
     name: virtualbox
 platforms:
   - name: vagrant-pihole-01
-    box: luminositylabsllc/rockylinux9
+    box: bento/debian-12
     hostname: vagrant-pihole-01
     interfaces:
       - network_name: private_network
@@ -19,7 +21,7 @@ platforms:
     memory: 2048
     cpus: 2
   - name: vagrant-pihole-02
-    box: luminositylabsllc/rockylinux9
+    box: bento/debian-12
     hostname: vagrant-pihole-02
     interfaces:
       - network_name: private_network
@@ -42,13 +44,13 @@ provisioner:
       #group_vars: ../../group_vars/
       #host_vars: ../../host_vars/
   playbooks:
-    converge: ../../bootstrap-pihole.yaml 
+    converge: ../../bootstrap-pihole.yaml
   env:
-    ANSIBLE_ROLES_PATH: ../../roles/
+    ANSIBLE_ROLES_PATH: molecule/debian/roles:../../roles/
 verifier:
   name: ansible
 scenario:
-  name: default
+  name: debian
   test_sequence:
     - dependency
     - create
