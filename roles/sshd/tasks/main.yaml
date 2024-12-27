@@ -1,12 +1,12 @@
 - name: Set correct handeler for Redhat Family
   set_fact:
-    ssh_service: Restart sshd
+    target_handeler: Restart sshd
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Set correct handeler for OS Ubuntu
   set_fact:
-    ssh_service: Restart ssh
-  when: ansible_distribution == 'Ubuntu'
+    target_handeler: Restart ssh
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian' 
 
 - name: Configure sshd
   lineinfile:
@@ -21,7 +21,7 @@
     - { key: "MaxSessions", value: "5" }
     - { key: "MaxAuthTries", value: "3" }
   notify:
-    - "{{ ssh_service }}"
+    - "{{ target_handeler }}"
 
 - name: Flush handlers
   meta: flush_handlers
