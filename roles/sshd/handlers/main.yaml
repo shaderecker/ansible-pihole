@@ -2,10 +2,8 @@
   service:
     name: sshd
     state: restarted
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Restart sshd
+- name: Restart ssh
   service:
     name: ssh
     state: restarted
-  when: ansible_distribution == 'Ubuntu'
