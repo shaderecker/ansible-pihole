@@ -2,6 +2,9 @@
 # molecule/default/molecule.yml
 dependency:
   name: galaxy
+  options:
+    role-file: requirements.yml
+    roles-path: molecule/default/roles
 driver:
   name: vagrant
   provider:
@@ -37,10 +40,10 @@ provisioner:
   inventory:
     links:
       hosts: inventory.yml
-  #playbooks:
-  #  converge: ../../bootstrap-pihole.yaml 
+  playbooks:
+    converge: ../../bootstrap-pihole.yaml 
   env:
-    ANSIBLE_ROLES_PATH: ../../roles/
+    ANSIBLE_ROLES_PATH: molecule/default/roles:../../roles/
 verifier:
   name: ansible
 scenario:

@@ -4,7 +4,7 @@
   hosts: all
   tasks:
     - name: Update and Install Python
-      ansible.builtin.apt:
+      ansible.builtin.dnf:
         update_cache: yes
         name: python3
         state: present
