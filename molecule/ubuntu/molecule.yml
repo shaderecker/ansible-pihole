@@ -3,8 +3,7 @@
 dependency:
   name: galaxy
   options:
-    role-file: ../../roles/requirements.yaml
-    roles-path: ../../roles/
+    role-file: requirements.yaml
 driver:
   name: vagrant
   provider:
@@ -45,7 +44,7 @@ provisioner:
   playbooks:
     converge: ../../bootstrap-pihole.yaml
   env:
-    ANSIBLE_ROLES_PATH: molecule/default/roles:../../roles/
+    ANSIBLE_ROLES_PATH: ../../roles/
 verifier:
   name: ansible
 scenario:

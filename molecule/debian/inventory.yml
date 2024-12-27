@@ -26,9 +26,9 @@ all:
     pihole_rev_server: "true"
     pihole_rev_server_domain: "coalhill.zz"
     pihole_rev_server_target: "192.168.56.1"
-    pihole_rev_server_cidr: "192.168.56.0/24"
+    pihole_rev_server_cidr: "192.168.56.11/24"
     pihole_ha_mode: true
-    pihole_vip_ipv4: "192.168.56.12/24"
+    pihole_vip_ipv4: "192.168.56.10/24"
     pihole_vip_ipv6: "fd00::10/64"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
     gravity_sync_version: v4.0.7

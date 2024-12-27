@@ -1,11 +1,9 @@
 ---
-# molecule/debain/molecule.yml
+# molecule/default/molecule.yml
 dependency:
   name: galaxy
   options:
-    role-file: requirements.yml
-    roles-path: molecule/debian/roles
-    force: true
+    role-file: requirements.yaml
 driver:
   name: vagrant
   provider:
@@ -17,7 +15,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: static
-        ip: 192.168.56.4
+        ip: 192.168.56.6
     memory: 2048
     cpus: 2
   - name: vagrant-pihole-02
@@ -26,7 +24,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: static
-        ip: 192.168.56.5
+        ip: 192.168.56.7
         memory: 2048
     cpus: 2
 
@@ -46,7 +44,7 @@ provisioner:
   playbooks:
     converge: ../../bootstrap-pihole.yaml
   env:
-    ANSIBLE_ROLES_PATH: molecule/debian/roles:../../roles/
+    ANSIBLE_ROLES_PATH: molecule/default/roles:../../roles/
 verifier:
   name: ansible
 scenario:
