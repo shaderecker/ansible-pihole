@@ -12,7 +12,6 @@
 - name: Install keepalived Debian
   ansible.builtin.apt:
     pkg:
-      - firewalld
       - keepalived
     force_apt_get: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -24,6 +23,7 @@
       - kernel-devel
       - keepalived
       - policycoreutils-python-utils
+      - python3-pip
     state: present
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 

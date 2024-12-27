@@ -78,5 +78,22 @@
   notify: Restart dhcpcd
   when: ansible_distribution == 'Debian'and ansible_architecture == 'aarch64'
 
+- name: Install requirements Debian
+  ansible.builtin.apt:
+    pkg:
+    - firewalld
+    - python3-pip
+    update_cache: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install keepalived Rocky
+  ansible.builtin.dnf:
+    name:
+      - python3-pip
+      - bind-utils
+    state: present
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+
 - name: Flush handlers
   meta: flush_handlers
