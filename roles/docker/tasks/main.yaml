@@ -80,7 +80,10 @@
 
 - name: Install Docker SDK for python
   pip:
-    name: docker
+    name: 
+      - docker
+    extra_args: "--user"
+    break_system_packages: true
 
 - name: Add user to docker group
   ansible.builtin.user:

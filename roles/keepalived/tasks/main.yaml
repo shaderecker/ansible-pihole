@@ -4,17 +4,7 @@
     block: |
       net.ipv4.ip_nonlocal_bind=1
       net.ipv4.ip_forward = 1
-      #net.nf_conntrack_max = 4194304
-      #net.ipv6.ip_nonlocal_bind = 1
   notify: Reload sysctl config
-
-### Add in firewall rules for vrrp protocol
-- name: Add VRRP protocol to firewall
-  ansible.posix.firewalld:
-    rich_rule: rule protocol value="vrrp" accept
-    permanent: true
-    state: enabled
-  notify: Restart firewall config
 
 - name: Flush handlers
   meta: flush_handlers
@@ -22,7 +12,9 @@
 - name: Install keepalived Debian
   apt:
     force_apt_get: true
-    name: keepalived
+    name: 
+      - keepalived
+      - firewalld
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install keepalived Rocky
@@ -91,6 +83,14 @@
     regexp: 'eth0'
     replace: 'eth1'
   when: vagrant_env == true and ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+### Add in firewall rules for vrrp protocol
+- name: Add VRRP protocol to firewall
+  ansible.posix.firewalld:
+    rich_rule: rule protocol value="vrrp" accept
+    permanent: true
+    state: enabled
+  notify: Restart firewall config
 
 - name: Flush handlers
   meta: flush_handlers
