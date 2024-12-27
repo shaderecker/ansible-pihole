@@ -10,11 +10,11 @@
   meta: flush_handlers
 
 - name: Install keepalived Debian
-  apt:
-    force_apt_get: true
-    name: 
-      - keepalived
+  ansible.builtin.apt:
+    pkg:
       - firewalld
+      - keepalived
+    force_apt_get: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install keepalived Rocky
