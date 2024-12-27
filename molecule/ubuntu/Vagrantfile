@@ -1,32 +1,39 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Vagrant Configuration
 Vagrant.configure("2") do |config|
 
+  # Global Settings
+  vm_settings = {
+    box: "bento/ubuntu-24.04",
+    memory: 2048,
+    cpus: 2,
+    machines: [
+      { name: "vagrant-pihole-01", ip: "192.168.56.4" },
+      { name: "vagrant-pihole-02", ip: "192.168.56.5" }
+    ]
+  }
+
+  # Provider Settings
   config.vm.provider "virtualbox" do |v|
-	v.memory = 2048
-  	v.cpus = 2
+    v.memory = vm_settings[:memory]
+    v.cpus = vm_settings[:cpus]
   end
 
-  ##### DEFINE VM #####\
-  config.vm.define "vagrant-pihole-01" do |config|
-    config.vm.hostname = 'vagrant-pihole-01'
-    config.vm.box = "bento/ubuntu-24.04"
-    config.vm.box_check_update = true
-    config.vm.network "private_network", ip: "192.168.56.4"
+  # Define VMs
+  vm_settings[:machines].each do |machine|
+    config.vm.define machine[:name] do |vm|
+      vm.vm.hostname = machine[:name]
+      vm.vm.box = vm_settings[:box]
+      vm.vm.box_check_update = true
+      vm.vm.network "private_network", ip: machine[:ip]
+
+      # Cleanup known_hosts entry after destruction
+      vm.trigger.after :destroy do |trigger|
+        trigger.info = "Removing known_hosts entry for #{machine[:name]}"
+        trigger.run = { inline: "ssh-keygen -R #{machine[:ip]}" }
+      end
+    end
   end
-
-  config.vm.define "vagrant-pihole-02" do |config|
-    config.vm.hostname = 'vagrant-pihole-02'
-    config.vm.box = "bento/ubuntu-24.04"
-    config.vm.box_check_update = true
-    config.vm.network "private_network", ip: "192.168.56.5"
-  end
-
-  config.trigger.after :destroy do |trigger|
-    trigger.info = "Removing known_hosts entries"
-    trigger.run = {inline: "ssh-keygen -R 192.168.56.4"}
-    trigger.run = {inline: "ssh-keygen -R 192.168.56.5"}
-  end 
-
 end
