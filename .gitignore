@@ -174,3 +174,4 @@ cython_debug/
 .env.leave
 .vagrant
 roles/docker
+.tool-versions
