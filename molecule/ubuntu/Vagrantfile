@@ -8,12 +8,19 @@ Vagrant.configure("2") do |config|
   vm_settings = {
     box: "bento/ubuntu-24.04",
     memory: 2048,
-    cpus: 2,
+    cpus: 4,
     machines: [
       { name: "vagrant-pihole-01", ip: "192.168.56.4" },
       { name: "vagrant-pihole-02", ip: "192.168.56.5" }
     ]
   }
+
+  ### DEFINE SCRIPT ### 
+  $script = <<-SCRIPT
+  echo I am provisioning...
+  date > /etc/vagrant_provisioned_at
+  # PUT EXTRA OPTIONS IN HERE
+  SCRIPT
 
   # Provider Settings
   config.vm.provider "virtualbox" do |v|
@@ -21,13 +28,19 @@ Vagrant.configure("2") do |config|
     v.cpus = vm_settings[:cpus]
   end
 
+  # Vbguest auto-update but only if plugin is present #Defaulted to off
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
+
   # Define VMs
   vm_settings[:machines].each do |machine|
     config.vm.define machine[:name] do |vm|
       vm.vm.hostname = machine[:name]
       vm.vm.box = vm_settings[:box]
-      vm.vm.box_check_update = true
+      vm.vm.box_check_update = false
       vm.vm.network "private_network", ip: machine[:ip]
+      vm.vm.provision "shell", inline: $script
 
       # Cleanup known_hosts entry after destruction
       vm.trigger.after :destroy do |trigger|
