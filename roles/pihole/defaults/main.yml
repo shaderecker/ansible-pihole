@@ -27,17 +27,17 @@ pihole_environment_variables:
   WEBTHEME: 'default-light'  # Theme for the web interface
   CUSTOM_CACHE_SIZE: '10000'  # Custom DNS cache size
   DHCP_ACTIVE: 'false'  # Enable DHCP server
-  DHCP_START: '192.168.1.201'  # Start of DHCP address range
-  DHCP_END: '192.168.1.251'  # End of DHCP address range
-  DHCP_ROUTER: '192.168.1.1'  # DHCP router (gateway) IP address
+  DHCP_START: '192.168.56.201'  # Start of DHCP address range
+  DHCP_END: '192.168.56.251'  # End of DHCP address range
+  DHCP_ROUTER: '192.168.56.1'  # DHCP router (gateway) IP address
   DHCP_LEASETIME: '24'  # DHCP lease time in hours
   PIHOLE_DOMAIN: 'lan'  # Local domain name
   DHCP_IPv6: 'true'  # Enable IPv6 DHCP server
   DHCP_rapid_commit: false #Enable DHCPv4 rapid commit (fast address assignment)
   DNSSEC: 'false'  # Enable DNSSEC
   REV_SERVER: 'false'  # Enable conditional forwarding
-  REV_SERVER_CIDR: '192.168.0.0/16'  # CIDR range for reverse DNS
-  REV_SERVER_TARGET: '192.168.1.1'  # IP of the upstream DNS server for conditional forwarding
+  REV_SERVER_CIDR: '192.168.56.0/24'  # CIDR range for reverse DNS
+  REV_SERVER_TARGET: '192.168.56.1'  # IP of the upstream DNS server for conditional forwarding
   REV_SERVER_DOMAIN: 'lan'  # Local domain name for reverse DNS
 
   # Advanced Variables
