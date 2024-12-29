@@ -28,39 +28,27 @@
     execution_mode: "single node setup"
   when: pihole_ha_mode == false
 
-- name: Start/Update pihole container
-  community.docker.docker_container:
-    name: "{{ pihole_container_name }}"
-    image: "{{ pihole_image }}"
-    pull: true
-    restart_policy: unless-stopped
-    env:
-      TZ: "{{ timezone }}"
-      WEBPASSWORD: "{{ pihole_webpassword }}"
-      PIHOLE_DNS_: "{{ pihole_dns }}"
-      DNSMASQ_LISTENING: "{{ dnsmasq_listening }}"
-      REV_SERVER: "{{ pihole_rev_server }}"
-      REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
-      REV_SERVER_TARGET: "{{ pihole_rev_server_target }}"
-      REV_SERVER_CIDR: "{{ pihole_rev_server_cidr }}"
-      FTLCONF_MAXDBDAYS: "{{ pihole_ftl_max_db_days }}"
-    dns_servers:
-      - 127.0.0.1
-      - "{{ static_dns }}"
-    network_mode: host
-    volumes:
-      - "/home/{{ ansible_user }}/pihole/pihole/:/etc/pihole/"
-      - "/home/{{ ansible_user }}/pihole/dnsmasq.d/:/etc/dnsmasq.d/"
-    log_driver: json-file
-    log_options:
-      max-size: "10m"
-      max-file: "5"
-    capabilities:
-      - CAP_NET_BIND_SERVICE
-      - CAP_NET_RAW
-      - CAP_NET_ADMIN
-      - CAP_SYS_NICE
-      - CAP_CHOWN
+
+- name: Create Pi-hole configuration directories
+  file:
+    path: "{{ dir_loc }}/{{ item }}"
+    state: directory
+  with_items:
+    - /etc/pihole
+    - /etc/dnsmasq.d
+  become: true
+
+- name: Deploy Docker Compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ dir_loc }}/docker-compose.yml"
+  become: true
+
+- name: Start Pi-hole service
+  command: docker compose up -d
+  args:
+    chdir: "{{ dir_loc }}"
+  become: true
 
 - name: Stop and disable resolver
   ansible.builtin.service:
@@ -69,19 +57,17 @@
     enabled: false
   when: ansible_distribution == 'Ubuntu'
 
-- block:
-  - name: Default firewalld rules
-    ansible.posix.firewalld:
-      service: "{{ item }}"
-      state: enabled
-      permanent: true
-      immediate: true
-      zone: public
-    with_items:
-      - http
-      - https
-      - dns
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: Default firewalld rules
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+    zone: public
+  with_items:
+    - http
+    - https
+    - dns
 
 - name: Bootps firewalld rule
   ansible.posix.firewalld:
@@ -93,6 +79,19 @@
   with_items:
     - bootps
   when: pihole_rev_server == true
+
+- name: Check if DHCP is enabled
+  set_fact:
+    pihole_dhcp_enabled: "{{ pihole_environment_variables.DHCP_ACTIVE | lower == 'true' }}"
+
+- name: Allow DHCP port in the firewall (if enabled)
+  firewalld:
+    service: dhcp
+    permanent: true
+    state: enabled
+    immediate: true
+  when: pihole_dhcp_enabled
+  become: true
 
 - name: Check pihole container
   uri:
