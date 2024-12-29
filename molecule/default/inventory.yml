@@ -28,6 +28,7 @@ all:
       REV_SERVER_CIDR: "192.168.56.0/24"      
       REV_SERVER_TARGET: "192.168.56.1"
       REV_SERVER_DOMAIN: "vagrant.test"
+      DHCP_ACTIVE: false
     pihole_ha_mode: true
     pihole_vip_ipv4: "192.168.56.10/24"
     pihole_vip_ipv6: "fd00::10/64"
@@ -36,5 +37,4 @@ all:
     dnsmasq_listening: single
     pihole_container_name: pihole
     vagrant_env: true
-    docker_users:
-      - vagrant
+    docker_users: vagrant

@@ -77,7 +77,7 @@
     zone: public
   with_items:
     - bootps
-  when: pihole_rev_server == true
+  when: pihole_environment_variables.REV_SERVER == true
 
 - name: Check if DHCP is enabled
   set_fact:
