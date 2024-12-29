@@ -49,12 +49,12 @@
       systemd:
         name: systemd-resolved
         state: restarted
-
-    - name: Restart docker
-      systemd:
-        name: docker
-        state: restarted
   when: ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Restart docker
+  systemd:
+    name: docker
+    state: restarted
 
 - name: Start Pi-hole service
   command: docker compose up -d

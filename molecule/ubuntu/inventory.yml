@@ -39,4 +39,3 @@ all:
     pihole_container_name: pihole
     vagrant_env: true
     docker_users: vagrant
-    static_dns: 1.1.1.1

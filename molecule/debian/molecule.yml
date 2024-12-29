@@ -38,7 +38,7 @@ provisioner:
     ansible_become: true
   inventory:
     links:
-      hosts: inventory.yml
+      hosts: ../default/inventory.yml
       #group_vars: ../../group_vars/
       #host_vars: ../../host_vars/
   playbooks:
