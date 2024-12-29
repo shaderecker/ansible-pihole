@@ -22,7 +22,7 @@ all:
     pihole_environment_variables:
       TZ: "{{ timezone }}"
       FTLCONF_MAXDBDAYS: "180"
-      pihole_webpassword: Intranet # example value, change it and better use ansible-vault
+      WEBPASSWORD: Intranet # example value, change it and better use ansible-vault
       PIHOLE_DNS_: "1.1.1.1;2606:4700:4700::1111"
       REV_SERVER: "true"
       REV_SERVER_CIDR: "192.168.56.0/24"      

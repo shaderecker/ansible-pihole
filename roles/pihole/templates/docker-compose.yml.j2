@@ -2,16 +2,16 @@
 services:
 
   pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
+    container_name: {{ pihole_container_name }}
+    image: {{ pihole_image }}
     restart: unless-stopped
     environment:
 {% for var, value in pihole_environment_variables.items() %}
       - {{ var }}={{ value }}
 {% endfor %}
     volumes:
-      - /etc/pihole:/etc/pihole
-      - /etc/dnsmasq.d:/etc/dnsmasq.d
+      - {{ dir_loc }}/etc/pihole:/etc/pihole
+      - {{ dir_loc }}/etc/dnsmasq.d:/etc/dnsmasq.d
     ports:
       - "53:53/tcp"
       - "53:53/udp"
