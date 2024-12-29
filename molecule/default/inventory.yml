@@ -35,3 +35,5 @@ all:
     dnsmasq_listening: single
     pihole_container_name: pihole
     vagrant_env: true
+    docker_users:
+      - vagrant

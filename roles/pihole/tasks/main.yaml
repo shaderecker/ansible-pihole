@@ -28,10 +28,9 @@
     execution_mode: "single node setup"
   when: pihole_ha_mode == false
 
-
 - name: Create Pi-hole configuration directories
   file:
-    path: "{{ dir_loc }}/{{ item }}"
+    path: '{{ dir_loc }}/{{ item }}'
     state: directory
   with_items:
     - /etc/pihole
