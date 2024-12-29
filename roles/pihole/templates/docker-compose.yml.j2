@@ -13,6 +13,8 @@ services:
     volumes:
       - {{ dir_loc }}/etc/pihole:/etc/pihole
       - {{ dir_loc }}/etc/dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
     ports:
       - "53:53/tcp"
       - "53:53/udp"

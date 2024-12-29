@@ -8,14 +8,15 @@
     msg: "Pi-hole container is not running."
   when: container_status.stdout_lines | length == 0
 
-- name: Verify DNS resolution through Pi-hole
-  command: nslookup google.com 127.0.0.1
+- name: Test DNS Resolution
+  command: dig +short @127.0.0.1 google.com
   register: dns_test
+  failed_when: dns_test.stdout == ""
 
-- name: Fail if DNS resolution test fails
-  fail:
-    msg: "DNS resolution through Pi-hole failed: {{ dns_test.stderr }}"
-  when: dns_test.rc != 0
+- name: Assert DNS Resolution is Working for Multiple IPs
+  assert:
+    that:
+      - dns_test.stdout | regex_search('216\\.58\\.|172\\.217\\.|142\\.250\\.')
 
 - name: INFORMATION
   debug:

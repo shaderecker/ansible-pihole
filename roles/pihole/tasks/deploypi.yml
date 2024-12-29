@@ -14,18 +14,47 @@
     execution_mode: "HA setup with keepalived"
   when: pihole_ha_mode == true
 
-- name: Determine Pi-hole host IPs (single mode)
-  set_fact:
-    pihole_local_ipv4: "{{ ansible_host }}"
-    pihole_local_ipv6: "{{ ipv6 }}"
-    execution_mode: "single node setup"
-  when: pihole_ha_mode == false
-
 - name: Deploy Docker Compose file
   template:
     src: docker-compose.yml.j2
     dest: "{{ dir_loc }}/docker-compose.yml"
-  become: true
+
+- name: Pull docker image
+  community.docker.docker_image_pull:
+    name: "{{ pihole_image }}"
+    platform: "{{ ansible_architecture }}"
+
+#Fix for resolve conf on ubuntu
+- name: Configure systemd-resolved for Pi-hole
+  block:
+    - name: Disable DNSStubListener in systemd-resolved configuration
+      lineinfile:
+        path: /etc/systemd/resolved.conf
+        regexp: '^#?DNSStubListener='
+        line: 'DNSStubListener=no'
+        backup: true
+
+    - name: Remove /etc/resolv.conf if it exists
+      file:
+        path: /etc/resolv.conf
+        state: absent
+
+    - name: Create symlink for resolv.conf
+      file:
+        src: /run/systemd/resolve/resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+
+    - name: Restart systemd-resolved
+      systemd:
+        name: systemd-resolved
+        state: restarted
+
+    - name: Restart docker
+      systemd:
+        name: docker
+        state: restarted
+  when: ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution'] == 'Ubuntu'
 
 - name: Start Pi-hole service
   command: docker compose up -d

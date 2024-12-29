@@ -1,7 +1,12 @@
-
+---
 - name: Install Python3-pip
   ansible.builtin.apt:
     name: python3-pip
+    state: present
+
+- name: Install net-tools
+  ansible.builtin.apt:
+    name: net-tools
     state: present
 
 - name: Ensure firwewalld is installed

@@ -1,12 +1,4 @@
 ---
-- name: Install Docker SDK for python
-  pip:
-    name: 
-      - docker
-      - requests
-    extra_args: "--user"
-    break_system_packages: true
-
 - name: Create Pi-hole configuration directories
   file:
     path: '{{ dir_loc }}/{{ item }}'
