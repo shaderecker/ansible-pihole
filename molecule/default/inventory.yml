@@ -19,6 +19,7 @@ all:
     github_user_for_ssh_key: steveyminecraft # Change me to required value
     pihole_image: "pihole/pihole:2024.07.0"
     timezone: "Europe/London"
+    firewall_deploy: true # will ensure firewalld is install and configured
     pihole_environment_variables:
       TZ: "{{ timezone }}"
       FTLCONF_MAXDBDAYS: "180"

@@ -1,114 +1,22 @@
-- name: Install Docker SDK for python
-  pip:
-    name: 
-      - docker
-      - requests
-    extra_args: "--user"
-    break_system_packages: true
+---
+# Main task file for Pi-hole setup using Ansible
+- name: Debian setup tasks
+  include_tasks: debian.yml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Create pihole directory
-  file:
-    path: "/home/{{ ansible_user }}/pihole"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    state: directory
-    mode: 0755
+- name: Redhat setup tasks
+  include_tasks: redhat.yml  
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Determine Pi-hole host IPs (HA mode)
-  set_fact:
-    pihole_local_ipv4: "{{ pihole_vip_ipv4.split('/')[0] }}"
-    pihole_local_ipv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
-    execution_mode: "HA setup with keepalived"
-  when: pihole_ha_mode == true
+- name: Run pre-deployment tasks
+  include_tasks: pre.yml
 
-- name: Determine Pi-hole host IPs (single mode)
-  set_fact:
-    pihole_local_ipv4: "{{ ansible_host }}"
-    pihole_local_ipv6: "{{ ipv6 }}"
-    execution_mode: "single node setup"
-  when: pihole_ha_mode == false
+- name: Deploy Pi-hole container
+  include_tasks: deploypi.yml
 
-- name: Create Pi-hole configuration directories
-  file:
-    path: '{{ dir_loc }}/{{ item }}'
-    state: directory
-  with_items:
-    - /etc/pihole
-    - /etc/dnsmasq.d
-  become: true
+- name: Configure firewall
+  include_tasks: firewall.yml
+  when: firewall_deploy | lower == 'true'
 
-- name: Deploy Docker Compose file
-  template:
-    src: docker-compose.yml.j2
-    dest: "{{ dir_loc }}/docker-compose.yml"
-  become: true
-
-- name: Start Pi-hole service
-  command: docker compose up -d
-  args:
-    chdir: "{{ dir_loc }}"
-  become: true
-
-- name: Stop and disable resolver
-  ansible.builtin.service:
-    name: systemd-resolved
-    state: stopped
-    enabled: false
-  when: ansible_distribution == 'Ubuntu'
-
-- name: Default firewalld rules
-  ansible.posix.firewalld:
-    service: "{{ item }}"
-    state: enabled
-    permanent: true
-    immediate: true
-    zone: public
-  with_items:
-    - http
-    - https
-    - dns
-
-- name: Bootps firewalld rule
-  ansible.posix.firewalld:
-    service: "{{ item }}"
-    state: enabled
-    permanent: true
-    immediate: true
-    zone: public
-  with_items:
-    - bootps
-  when: pihole_environment_variables.REV_SERVER == true
-
-- name: Check if DHCP is enabled
-  set_fact:
-    pihole_dhcp_enabled: "{{ pihole_environment_variables.DHCP_ACTIVE | lower == 'true' }}"
-
-- name: Allow DHCP port in the firewall (if enabled)
-  firewalld:
-    service: dhcp
-    permanent: true
-    state: enabled
-    immediate: true
-  when: pihole_dhcp_enabled
-  become: true
-
-- name: Check pihole container
-  uri:
-    url: http://localhost/admin
-  register: result
-  until: result.status == 200
-  retries: 5
-  delay: 10
-
-- name: Remove old image versions
-  docker_prune:
-    images: true
-    images_filters:
-      dangling: false
-
-- name: INFORMATION
-  debug:
-    msg:
-      - "In the {{ execution_mode }} make sure to point your DNS server settings here:"
-      - "DNSv4: {{ pihole_local_ipv4 }}"
-      - "DNSv6: {{ pihole_local_ipv6 }}"
+- name: Verify Pi-hole deployment
+  include_tasks: verify.yml

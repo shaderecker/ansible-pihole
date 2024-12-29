@@ -1,5 +1,6 @@
 ---
 dir_loc: '/opt/pihole'
+firewall_deploy: true
 firewall_itmes:
   - dns
   - http
