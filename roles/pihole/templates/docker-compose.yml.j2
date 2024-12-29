@@ -3,7 +3,7 @@ services:
 
   pihole:
     container_name: {{ pihole_container_name }}
-    hostname: {{ pihole_container_name }}
+    hostname: {{ inventory_hostname }}
     image: {{ pihole_image }}
     restart: unless-stopped
     environment:
