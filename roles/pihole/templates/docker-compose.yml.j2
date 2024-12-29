@@ -1,13 +1,14 @@
-version: '3'
-
+---
 services:
+
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    restart: unless-stopped
     environment:
-      {% for var, value in pihole_environment_variables.items() %}
+{% for var, value in pihole_environment_variables.items() %}
       - {{ var }}={{ value }}
-      {% endfor %}
+{% endfor %}
     volumes:
       - /etc/pihole:/etc/pihole
       - /etc/dnsmasq.d:/etc/dnsmasq.d
@@ -18,4 +19,3 @@ services:
       - "443:443/tcp"{% if pihole_environment_variables.DHCP_ACTIVE | lower == 'true' %}
       - "67:67/udp"  # DHCP port
       {% endif %}
-    restart: unless-stopped
