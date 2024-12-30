@@ -26,7 +26,7 @@ all:
       WEBPASSWORD: 'Intranet' # example value, change it and better use ansible-vault
       PIHOLE_DNS_: "1.1.1.1;2606:4700:4700::1111"
       REV_SERVER: "true"
-      REV_SERVER_CIDR: "192.168.56.0/24"      
+      REV_SERVER_CIDR: "192.168.56.0/24"
       REV_SERVER_TARGET: "192.168.56.1"
       REV_SERVER_DOMAIN: "vagrant.test"
       DHCP_ACTIVE: false

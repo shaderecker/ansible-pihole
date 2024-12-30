@@ -7,13 +7,6 @@
     state: directory
     mode: 0755
 
-- name: Determine Pi-hole host IPs (HA mode)
-  set_fact:
-    pihole_local_ipv4: "{{ pihole_vip_ipv4.split('/')[0] }}"
-    pihole_local_ipv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
-    execution_mode: "HA setup with keepalived"
-  when: pihole_ha_mode == true
-
 - name: Deploy Docker Compose file
   template:
     src: docker-compose.yml.j2
@@ -27,6 +20,12 @@
 #Fix for resolve conf on ubuntu
 - name: Configure systemd-resolved for Pi-hole
   block:
+
+    - name: Stop resolver
+      ansible.builtin.service:
+        name: systemd-resolved
+        state: stopped
+
     - name: Disable DNSStubListener in systemd-resolved configuration
       lineinfile:
         path: /etc/systemd/resolved.conf
@@ -46,14 +45,14 @@
         state: link
 
     - name: Restart systemd-resolved
-      ansible.builtin.systemd_service:
+      ansible.builtin.service:
         name: systemd-resolved
         state: restarted
   when: ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution'] == 'Ubuntu'
 
 # restart docker to ensure IP tables are valid after install
 - name: Restart docker
-  ansible.builtin.systemd_service:
+  ansible.builtin.service:
     name: docker
     state: restarted
 

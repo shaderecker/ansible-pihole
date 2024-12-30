@@ -1,5 +1,7 @@
-- name: Stop and disable resolver
+---
+# handlers file for docker-pihole
+- name: Docker service restart
   ansible.builtin.service:
-    name: systemd-resolved
-    state: stopped
-    enabled: false
+    name: docker
+    state: restarted
+    enabled: true

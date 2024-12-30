@@ -17,10 +17,3 @@
   assert:
     that:
       - dns_test.stdout | regex_search('216\\.58\\.|172\\.217\\.|142\\.250\\.')
-
-- name: INFORMATION
-  debug:
-    msg:
-      - "In the {{ execution_mode }} make sure to point your DNS server settings here:"
-      - "DNSv4: {{ pihole_local_ipv4 }}"
-      - "DNSv6: {{ pihole_local_ipv6 }}"
