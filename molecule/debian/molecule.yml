@@ -42,7 +42,7 @@ provisioner:
       #group_vars: ../../group_vars/
       #host_vars: ../../host_vars/
   playbooks:
-    converge: ../../bootstrap-pihole.yaml
+    converge: ../../playbooks/bootstrap-pihole.yaml
   env:
     ANSIBLE_ROLES_PATH: molecule/default/roles:../../roles/
 verifier:
