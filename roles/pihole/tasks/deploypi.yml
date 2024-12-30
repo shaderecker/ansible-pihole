@@ -51,6 +51,7 @@
         state: restarted
   when: ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution'] == 'Ubuntu'
 
+# restart docker to ensure IP tables are valid after install
 - name: Restart docker
   ansible.builtin.systemd_service:
     name: docker
