@@ -1,4 +1,14 @@
 ---
+- name: Enable Firewalld
+  ansible.builtin.systemd_service:
+    name: firewalld
+    state: restarted
+
+- name: Enable Firewalld
+  ansible.builtin.systemd_service:
+    name: started
+    state: restarted
+
 - name: Default firewalld rules
   ansible.posix.firewalld:
     service: "{{ item }}"

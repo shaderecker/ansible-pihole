@@ -46,13 +46,13 @@
         state: link
 
     - name: Restart systemd-resolved
-      systemd:
+      ansible.builtin.systemd_service:
         name: systemd-resolved
         state: restarted
   when: ansible_facts['os_family'] == 'Debian' and ansible_facts['distribution'] == 'Ubuntu'
 
 - name: Restart docker
-  systemd:
+  ansible.builtin.systemd_service:
     name: docker
     state: restarted
 

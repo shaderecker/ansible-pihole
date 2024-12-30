@@ -4,6 +4,11 @@
     name: python3-pip
     state: present
 
+- name: Install python-requests
+  ansible.builtin.dnf:
+    name: python-requests
+    state: present
+
 - name: Install firewalls
   ansible.builtin.dnf:
     name: firewalld
