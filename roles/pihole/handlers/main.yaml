@@ -1,7 +1,0 @@
----
-# handlers file for docker-pihole
-- name: Docker service restart
-  ansible.builtin.service:
-    name: docker
-    state: restarted
-    enabled: true

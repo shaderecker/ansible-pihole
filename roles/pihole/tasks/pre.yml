@@ -1,9 +1,0 @@
----
-- name: Create Pi-hole configuration directories
-  file:
-    path: '{{ dir_loc }}/{{ item }}'
-    state: directory
-  with_items:
-    - /etc/pihole
-    - /etc/dnsmasq.d
-  become: true
