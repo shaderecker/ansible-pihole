@@ -175,3 +175,4 @@ cython_debug/
 .vagrant
 roles/docker
 .tool-versions
+roles/pihole
