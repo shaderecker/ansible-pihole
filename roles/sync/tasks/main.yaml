@@ -1,6 +1,5 @@
 - name: Install sqlite3
   apt:
-    force_apt_get: yes
     name: sqlite3
   become: yes
 
