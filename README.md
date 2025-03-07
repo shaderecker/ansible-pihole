@@ -80,7 +80,7 @@ When maintaining and updating your Pi-hole instances with the `bootstrap-pihole.
 This playbook enables the synchronisation of settings between multiple Pi-hole instances.  
 You can run it with: `ansible-playbook -i inventory.yaml sync.yaml`  
 One Pi-hole functions as the primary instance and the others as secondaries which pull from the primary.  
-Syncing is scheduled as a cronjob and set to run two times per day (frequency can be changed [here](roles/sync/tasks/main.yaml#L28)).  
+Syncing is scheduled as a cronjob and set to run two times per day (frequency can be changed [here](roles/sync/tasks/main.yaml#L34)).  
 What gets synced:
 - `gravity.db` (Adlists, Domains, Clients, Groups, Group Assignments of all aforementioned items)
 - `custom.list` (Local DNS Records)
