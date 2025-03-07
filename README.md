@@ -3,23 +3,22 @@ Bootstrap a Raspberry Pi with Ansible and install Docker + Pi-hole
 
 Optionally you can enable HA (high availability) with keepalived and sync settings between multiple instances.
 
-The repository contains four Ansible Playbooks. Each one is described here shortly.
+The repository contains four Ansible Playbooks. Each one is described below.
 
 For more info about the Docker Pi-hole image please check the official repository: https://github.com/pi-hole/docker-pi-hole
 
 ## Base Setup
-- An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.10 or later)
-- The [openssh_keypair](https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html) Ansible module installed
-- One or more Raspberry Pi's with [Raspberry Pi OS Lite](https://www.raspberrypi.com/software/operating-systems/) (bullseye)
-- Headless setup (configuration before first boot):
-  - Enable [SSH](https://www.raspberrypi.com/documentation/computers/remote-access.html#enabling-the-server) `"NOTE For headless setup..."`
-  - Enable [wireless networking](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-networking-2) or connect with LAN  
-    If you use LAN exclusively, consider disabling Wifi by adding `dtoverlay=disable-wifi` to `/boot/config.txt`
-  - Configure a [user](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-a-user)
+- An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.13 or later)
+- The [community.crypto](https://galaxy.ansible.com/ui/repo/published/community/crypto) Ansible collection installed
+- The [ansible.posix](https://galaxy.ansible.com/ui/repo/published/ansible/posix) Ansible collection installed
+- One or more Raspberry Pi's with [Raspberry Pi OS Lite (64-bit)](https://www.raspberrypi.com/software/operating-systems/) (bookworm)
+- I recommend using the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) for preparing your SD Cards since this easily allows the initial image configuration.
+  - Set username and password
+  - Configure Wireless LAN
+  - Enable SSH (preferably use the option “Allow public-key authentication only”)
 
 - Set static IPs for your Raspberry Pi's (static DHCP assignment/reservation in your Router/DHCP server is sufficient)
-- Configure your targets (IPs and initial user + password of your Raspberry Pi's) and other settings in [`inventory.yaml`](inventory.yaml)  
-You can add or remove hosts in the inventory, depending on how many Raspberry Pi's you use.
+- Configure your hosts (IPs and user of your Raspberry Pi's) and other settings in the [`inventory.yaml`](inventory.yaml)  
 
 ## `bootstrap-pihole.yaml`
 This playbook is for the first time run (but it can be rerun any time).  
