@@ -8,9 +8,6 @@ all:
       priority: 100
   vars:
     ansible_user: pi
-    ansible_password: raspberry # only used on first run
-    ansible_python_interpreter: /usr/bin/python3
-    github_user_for_ssh_key: shaderecker
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
     pihole_image: "pihole/pihole:2024.07.0"

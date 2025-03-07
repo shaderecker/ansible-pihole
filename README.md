@@ -37,9 +37,6 @@ These roles are included:
   - Set hostname to the respective Ansible inventory_hostname
   - Set a static DNS server, configured in [`static_dns`](inventory.yaml#L15)
 - [`updates`](roles/updates/tasks/main.yaml): Update apt packages
-- [`sshd`](roles/sshd/tasks/main.yaml): Harden the sshd config  
-  - Disable root login
-  - Disable password authentication
 - [`docker`](roles/docker/tasks/main.yaml): Install and configure Docker
 - [`pihole`](roles/pihole/tasks/main.yaml): Start/Update Pi-hole container
   - Pi-hole container settings are configured in [`inventory.yaml`](inventory.yaml#L16-L23)  
