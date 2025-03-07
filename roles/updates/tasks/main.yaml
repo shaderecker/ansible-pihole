@@ -1,8 +1,8 @@
 - name: Update apt packages
   apt:
-    force_apt_get: yes
     autoclean: yes
     autoremove: yes
+    clean: yes
     update_cache: yes
     upgrade: dist
 
