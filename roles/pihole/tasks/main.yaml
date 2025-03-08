@@ -6,28 +6,6 @@
     state: directory
     mode: 0755
 
-- name: Get IPv6 link local address
-  set_fact:
-    ipv6: "{{ item.address }}"
-  loop: "{{ vars['ansible_' + ansible_default_ipv6.interface | default(ansible_default_ipv4.interface)].ipv6 }}"
-  loop_control:
-    label: "{{ item.address }}"
-  when: "'link' in item.scope"
-
-- name: Determine Pi-hole host IPs (HA mode)
-  set_fact:
-    pihole_local_ipv4: "{{ pihole_vip_ipv4.split('/')[0] }}"
-    pihole_local_ipv6: "{{ pihole_vip_ipv6.split('/')[0] }}"
-    execution_mode: "HA setup with keepalived"
-  when: pihole_ha_mode
-
-- name: Determine Pi-hole host IPs (single mode)
-  set_fact:
-    pihole_local_ipv4: "{{ ansible_host }}"
-    pihole_local_ipv6: "{{ ipv6 }}"
-    execution_mode: "single node setup"
-  when: not pihole_ha_mode
-
 - name: Start/Update pihole container
   docker_container:
     name: pihole
@@ -36,21 +14,16 @@
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
-      WEBPASSWORD: "{{ pihole_webpassword }}"
-      PIHOLE_DNS_: "{{ pihole_dns }}"
-      DNSMASQ_LISTENING: "local"
-      REV_SERVER: "{{ pihole_rev_server }}"
-      REV_SERVER_DOMAIN: "{{ pihole_rev_server_domain }}"
-      REV_SERVER_TARGET: "{{ pihole_rev_server_target }}"
-      REV_SERVER_CIDR: "{{ pihole_rev_server_cidr }}"
-      FTLCONF_MAXDBDAYS: "{{ pihole_ftl_max_db_days }}"
+      FTLCONF_webserver_api_password: "{{ ftlconf_webserver_api_password }}"
+      FTLCONF_dns_upstreams: "{{ ftlconf_dns_upstreams }}"
+      FTLCONF_dns_listeningMode: "local"
+      FTLCONF_dns_revServers: "{{ ftlconf_dns_revservers }}"
     dns_servers:
       - 127.0.0.1
       - "{{ static_dns }}"
     network_mode: host
     volumes:
       - "/home/{{ ansible_user }}/pihole/pihole/:/etc/pihole/"
-      - "/home/{{ ansible_user }}/pihole/dnsmasq.d/:/etc/dnsmasq.d/"
     log_driver: json-file
     log_options:
       max-size: "10m"
@@ -60,6 +33,7 @@
       - CAP_NET_RAW
       - CAP_NET_ADMIN
       - CAP_SYS_NICE
+      - CAP_SYS_TIME
       - CAP_CHOWN
 
 - name: Check pihole container
@@ -75,10 +49,3 @@
     images: yes
     images_filters:
       dangling: false
-
-- name: INFORMATION
-  debug:
-    msg:
-      - "In the {{ execution_mode }} make sure to point your DNS server settings here:"
-      - "DNSv4: {{ pihole_local_ipv4 }}"
-      - "DNSv6: {{ pihole_local_ipv6 }}"
