@@ -1,9 +1,9 @@
 - name: Update apt packages
   apt:
-    autoclean: yes
-    autoremove: yes
-    clean: yes
-    update_cache: yes
+    autoclean: true
+    autoremove: true
+    clean: true
+    update_cache: true
     upgrade: dist
 
 - name: Check if reboot is needed

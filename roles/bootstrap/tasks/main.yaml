@@ -1,14 +1,14 @@
 - name: Lock password for {{ ansible_user }}
   user:
     name: "{{ ansible_user }}"
-    password_lock: yes
+    password_lock: true
 
-- name: bashrc for {{ ansible_user }}
+- name: Set bashrc for {{ ansible_user }}
   blockinfile:
     path: "/home/{{ ansible_user }}/.bashrc"
     block: alias ll='ls -la'
 
-- name: bashrc for root
+- name: Set bashrc for root
   blockinfile:
     path: "{{ ansible_user_dir }}/.bashrc"
     block: |

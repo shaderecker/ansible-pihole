@@ -13,18 +13,18 @@
     name:
       - docker-ce:armhf
       - python3-docker
-    install_recommends: no
+    install_recommends: false
 
 - name: Add user to docker group
   user:
     name: "{{ ansible_user }}"
-    append: yes
+    append: true
     groups: docker
 
 - name: Enable Docker IPv6
   copy:
     dest: /etc/docker/daemon.json
-    mode: 0600
+    mode: "600"
     content: |
       {
         "ipv6": true,

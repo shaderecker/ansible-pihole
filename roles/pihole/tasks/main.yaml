@@ -4,13 +4,13 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: directory
-    mode: 0755
+    mode: "755"
 
 - name: Start/Update pihole container
   docker_container:
     name: pihole
     image: "{{ pihole_image }}"
-    pull: yes
+    pull: true
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
@@ -46,6 +46,6 @@
 
 - name: Remove old image versions
   docker_prune:
-    images: yes
+    images: true
     images_filters:
       dangling: false

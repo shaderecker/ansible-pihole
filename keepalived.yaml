@@ -1,6 +1,6 @@
 - name: Enable failover with keepalived
   hosts: all
-  become: yes
+  become: true
   serial: 1
   roles:
     - stop_keepalived

@@ -17,13 +17,13 @@
   copy:
     dest: /etc/keepalived/check_pihole.sh
     src: check_pihole.sh
-    mode: 0755
+    mode: "755"
 
 - name: Configure keepalived
   template:
     dest: /etc/keepalived/keepalived.conf
     src: keepalived.j2
-    mode: 0644
+    mode: "644"
   notify: Restart keepalived service
 
 - name: Flush handlers
