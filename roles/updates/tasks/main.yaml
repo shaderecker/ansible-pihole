@@ -1,5 +1,5 @@
 - name: Update apt packages
-  apt:
+  ansible.builtin.apt:
     autoclean: true
     autoremove: true
     clean: true
@@ -7,10 +7,10 @@
     upgrade: dist
 
 - name: Check if reboot is needed
-  stat:
+  ansible.builtin.stat:
     path: /var/run/reboot-required
   register: reboot_required
 
 - name: Reboot
-  reboot:
+  ansible.builtin.reboot:
   when: reboot_required.stat.exists
