@@ -1,5 +1,5 @@
 - name: Create pihole directory
-  file:
+  ansible.builtin.file:
     path: "/home/{{ ansible_user }}/pihole"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
@@ -37,7 +37,7 @@
       - CAP_CHOWN
 
 - name: Check pihole container
-  uri:
+  ansible.builtin.uri:
     url: http://localhost/admin
   register: result
   until: result.status == 200
