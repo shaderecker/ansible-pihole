@@ -7,7 +7,7 @@
     mode: "755"
 
 - name: Start/Update pihole container
-  docker_container:
+  community.docker.docker_container:
     name: pihole
     image: "{{ pihole_image }}"
     pull: true
@@ -45,7 +45,7 @@
   delay: 10
 
 - name: Remove old image versions
-  docker_prune:
+  community.docker.docker_prune:
     images: true
     images_filters:
       dangling: false
