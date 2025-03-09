@@ -1,5 +1,5 @@
 - name: Install sqlite3
-  apt:
+  ansible.builtin.apt:
     name: sqlite3
   become: true
 
@@ -17,14 +17,14 @@
   loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
 
 - name: Create sync folder
-  file:
+  ansible.builtin.file:
     path: pihole_sync
     state: directory
     mode: "755"
   register: sync_dir
 
 - name: Copy sync script
-  template:
+  ansible.builtin.template:
     dest: "{{ sync_dir.path }}/pihole_sync.sh"
     src: pihole_sync.j2
     mode: "755"
