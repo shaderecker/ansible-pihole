@@ -1,15 +1,15 @@
 - name: Lock password for {{ ansible_user }}
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
-    password_lock: yes
+    password_lock: true
 
-- name: bashrc for {{ ansible_user }}
-  blockinfile:
+- name: Set bashrc for {{ ansible_user }}
+  ansible.builtin.blockinfile:
     path: "/home/{{ ansible_user }}/.bashrc"
     block: alias ll='ls -la'
 
-- name: bashrc for root
-  blockinfile:
+- name: Set bashrc for root
+  ansible.builtin.blockinfile:
     path: "{{ ansible_user_dir }}/.bashrc"
     block: |
       export LS_OPTIONS='--color=auto'
@@ -27,40 +27,40 @@
       fi
 
 - name: Set timezone
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/timezone
     regexp: "^"
     line: "{{ timezone }}"
 
 - name: Set localtime
-  file:
+  ansible.builtin.file:
     src: /usr/share/zoneinfo/{{ timezone }}
     dest: /etc/localtime
     state: link
 
 - name: Set hostname
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/hostname
     regexp: "^"
     line: "{{ inventory_hostname }}"
   notify: Reboot after hostname change
 
 - name: Set hosts
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/hosts
     regexp: "^127.0.1.1"
     line: 127.0.1.1       {{ inventory_hostname }}
   notify: Reboot after hostname change
 
 - name: Install dhcpcd
-  apt:
+  ansible.builtin.apt:
     name: dhcpcd
 
 - name: Set custom DNS servers
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/dhcpcd.conf
     block: static domain_name_servers={{ static_dns }}
   notify: Restart dhcpcd
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

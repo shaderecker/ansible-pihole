@@ -1,16 +1,16 @@
 - name: Create pihole directory
-  file:
+  ansible.builtin.file:
     path: "/home/{{ ansible_user }}/pihole"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     state: directory
-    mode: 0755
+    mode: "755"
 
 - name: Start/Update pihole container
-  docker_container:
+  community.docker.docker_container:
     name: pihole
     image: "{{ pihole_image }}"
-    pull: yes
+    pull: true
     restart_policy: unless-stopped
     env:
       TZ: "{{ timezone }}"
@@ -37,7 +37,7 @@
       - CAP_CHOWN
 
 - name: Check pihole container
-  uri:
+  ansible.builtin.uri:
     url: http://localhost/admin
   register: result
   until: result.status == 200
@@ -45,7 +45,7 @@
   delay: 10
 
 - name: Remove old image versions
-  docker_prune:
-    images: yes
+  community.docker.docker_prune:
+    images: true
     images_filters:
       dangling: false

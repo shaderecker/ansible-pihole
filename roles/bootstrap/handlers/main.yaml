@@ -1,7 +1,7 @@
 - name: Reboot after hostname change
-  reboot:
+  ansible.builtin.reboot:
 
 - name: Restart dhcpcd
-  service:
+  ansible.builtin.service:
     name: dhcpcd
     state: restarted
