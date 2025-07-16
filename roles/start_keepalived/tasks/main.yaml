@@ -1,5 +1,5 @@
 - name: Ensure keepalived service is started
-  service:
+  ansible.builtin.service:
     name: keepalived
     state: started
   register: result

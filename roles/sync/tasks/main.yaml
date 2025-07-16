@@ -1,8 +1,7 @@
 - name: Install sqlite3
-  apt:
-    force_apt_get: yes
+  ansible.builtin.apt:
     name: sqlite3
-  become: yes
+  become: true
 
 - name: Generate ssh keypair
   community.crypto.openssh_keypair:
@@ -15,20 +14,20 @@
     key: "{{ ssh_key.public_key }}"
     user: "{{ ansible_user }}"
   delegate_to: "{{ item }}"
-  loop: "{{ groups['all']|difference([inventory_hostname]) }}"
+  loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
 
 - name: Create sync folder
-  file:
+  ansible.builtin.file:
     path: pihole_sync
     state: directory
-    mode: 0755
+    mode: "755"
   register: sync_dir
 
 - name: Copy sync script
-  template:
+  ansible.builtin.template:
     dest: "{{ sync_dir.path }}/pihole_sync.sh"
     src: pihole_sync.j2
-    mode: 0755
+    mode: "755"
 
 - name: Schedule sync with cron
   ansible.builtin.cron:

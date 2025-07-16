@@ -1,64 +1,31 @@
-- name: Install dependencies
-  apt:
-    force_apt_get: yes
-    name:
-      - ca-certificates
-      - software-properties-common
-      - curl
-      - gnupg
 
-# free-form (string) arguments, all arguments on one line
-- name: define Keyring File
-  ansible.builtin.command: install -m 0755 -d /etc/apt/keyrings
-  become: true
+- name: Add Docker apt key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/raspbian/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 
-- name: curl gpg Key
-  ansible.builtin.command: curl -fsSL https://download.docker.com/linux/raspbian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-- name: changmod of File
-  ansible.builtin.command: chmod a+r /etc/apt/keyrings/docker.gpg
-  become: true
-
-- name: Set up Dockers APT repository
-  ansible.builtin.command:  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/raspbian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  become: true
-  
-- name: Update apt packages
-  apt:
-    force_apt_get: yes
-    autoclean: yes
-    autoremove: yes
-    update_cache: yes
-    upgrade: dist
+- name: Add Docker apt repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable
+    filename: docker
 
 - name: Install Docker
-  apt:
-    force_apt_get: yes
+  ansible.builtin.apt:
     name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-buildx-plugin
-      - docker-compose-plugin
-      - python3-setuptools
-      - python3-pip
-    install_recommends: no
-
-- name: Install Docker SDK for python
-  pip:
-    name: docker
-    executable: pip3
+      - docker-ce:armhf
+      - python3-docker
+    install_recommends: false
 
 - name: Add user to docker group
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
-    append: yes
+    append: true
     groups: docker
 
 - name: Enable Docker IPv6
-  copy:
+  ansible.builtin.copy:
     dest: /etc/docker/daemon.json
-    mode: 0600
+    mode: "600"
     content: |
       {
         "ipv6": true,
@@ -67,4 +34,4 @@
   notify: Restart Docker
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

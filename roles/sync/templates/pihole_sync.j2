@@ -22,17 +22,12 @@ if [[ ! $(ip a | grep {{ sync_target }}) ]]; then
     fi
   fi
 
-  RSYNC_DNS=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/custom.list $sync_dir)
+  RSYNC_TOML=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/pihole/pihole.toml $sync_dir)
   if [ $? -eq 0 ]; then
-    if [ -n "$RSYNC_DNS" ]; then
-      sudo cp --preserve=timestamps $sync_dir/custom.list $pihole_dir/pihole
-    fi
-  fi
-
-  RSYNC_CNAME=$(rsync -a --info=name -e "ssh $key $host_key_check" $target:$pihole_dir/dnsmasq.d/05-pihole-custom-cname.conf $sync_dir)
-  if [ $? -eq 0 ]; then
-    if [ -n "$RSYNC_CNAME" ]; then
-      sudo cp --preserve=timestamps $sync_dir/05-pihole-custom-cname.conf $pihole_dir/dnsmasq.d
+    if [ -n "$RSYNC_TOML" ]; then
+      docker stop pihole
+      sudo cp --preserve=timestamps $sync_dir/pihole.toml $pihole_dir/pihole
+      docker start pihole
     fi
   fi
 fi

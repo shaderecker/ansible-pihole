@@ -6,7 +6,6 @@
     - stop_keepalived
     - bootstrap
     - updates
-    - sshd
     - docker
     - pihole
     - start_keepalived

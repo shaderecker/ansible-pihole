@@ -1,28 +1,20 @@
 all:
   hosts:
     pihole-1:
-      ansible_host: 192.168.178.45
+      ansible_host: 10.10.0.5
       priority: 101
     pihole-2:
-      ansible_host: 192.168.178.46
+      ansible_host: 10.10.0.6
       priority: 100
   vars:
     ansible_user: pi
-    ansible_password: raspberry # only used on first run
-    ansible_python_interpreter: /usr/bin/python3
-    github_user_for_ssh_key: shaderecker
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
-    pihole_image: "pihole/pihole:2023.11.0"
-    pihole_ftl_max_db_days: "180"
-    pihole_webpassword: Intranet # example value, change it and better use ansible-vault
-    pihole_dns: "1.1.1.1;2606:4700:4700::1111"
-    pihole_DNSMASQ_LISTENING: "all"
-    pihole_rev_server: "true"
-    pihole_rev_server_domain: "fritz.box"
-    pihole_rev_server_target: "192.168.178.1"
-    pihole_rev_server_cidr: "192.168.178.0/24"
-    pihole_ha_mode: yes
-    pihole_vip_ipv4: "192.168.178.10/24"
+    pihole_image: "pihole/pihole:2025.03.0"
+    ftlconf_webserver_api_password: Intranet # example value, change it and better use ansible-vault
+    ftlconf_dns_upstreams: "1.1.1.1;2606:4700:4700::1111"
+    ftlconf_dns_revservers: "true,192.168.178.0/24,192.168.178.1,fritz.box"
+
+    pihole_vip_ipv4: "10.10.0.4/24"
     pihole_vip_ipv6: "fd00::10/64"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
