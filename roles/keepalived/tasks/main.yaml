@@ -1,7 +1,8 @@
+# In Debian 13 sysctl config moved to /etc/sysctl.d
 - name: Enable nonlocal IP binding
-  ansible.builtin.blockinfile:
-    path: /etc/sysctl.conf
-    block: |
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/ip_nonlocal_bind.conf
+    content: |
       net.ipv4.ip_nonlocal_bind = 1
       net.ipv6.ip_nonlocal_bind = 1
   notify: Reload sysctl config
