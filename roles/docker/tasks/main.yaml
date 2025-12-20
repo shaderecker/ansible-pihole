@@ -1,12 +1,26 @@
-- name: Add Docker apt key
+- name: Remove legacy Docker apt key
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/raspbian/gpg
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: absent
+
+- name: Remove legacy Docker apt repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/raspbian {{ ansible_facts.distribution_release }} stable
+    filename: docker
+    state: absent
 
 - name: Add Docker apt repository
-  ansible.builtin.apt_repository:
-    repo: deb https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable
-    filename: docker
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: "https://download.docker.com/linux/raspbian"
+    signed_by: "https://download.docker.com/linux/raspbian/gpg"
+    suites: "{{ ansible_facts.distribution_release }}"
+    components: stable
+    state: present
+    enabled: true
+    install_python_debian: true
 
 - name: Install Docker
   ansible.builtin.apt:
@@ -14,6 +28,7 @@
       - docker-ce:armhf
       - python3-docker
     install_recommends: false
+    update_cache: true
 
 - name: Add user to docker group
   ansible.builtin.user:

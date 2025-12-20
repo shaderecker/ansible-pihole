@@ -8,7 +8,7 @@ The repository contains four Ansible Playbooks. Each one is described below.
 For more info about the Docker Pi-hole image please check the official repository: https://github.com/pi-hole/docker-pi-hole
 
 ## Base Setup
-- An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.13 or later)
+- An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.15 or later)
 - The [community.crypto](https://galaxy.ansible.com/ui/repo/published/community/crypto) Ansible collection installed
 - The [ansible.posix](https://galaxy.ansible.com/ui/repo/published/ansible/posix) Ansible collection installed
 - One or more Raspberry Pi's with [Raspberry Pi OS Lite (64-bit)](https://www.raspberrypi.com/software/operating-systems/) (bookworm)
