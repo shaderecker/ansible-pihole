@@ -10,7 +10,7 @@ all:
     ansible_user: pi
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
-    pihole_image: "pihole/pihole:2025.03.0"
+    pihole_image: "pihole/pihole:2025.11.1"
     ftlconf_webserver_api_password: Intranet # example value, change it and better use ansible-vault
     ftlconf_dns_upstreams: "1.1.1.1;2606:4700:4700::1111"
     ftlconf_dns_revservers: "true,192.168.178.0/24,192.168.178.1,fritz.box"
