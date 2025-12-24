@@ -2,7 +2,7 @@
   ansible.builtin.service:
     name: keepalived
     state: started
-  register: result
+  register: start_keepalived_result
   failed_when:
-    - result.failed == true
-    - '"Could not find the requested service" not in result.msg'
+    - start_keepalived_result.failed == true
+    - '"Could not find the requested service" not in start_keepalived_result.msg'

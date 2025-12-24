@@ -10,7 +10,7 @@
 
 - name: Set bashrc for root
   ansible.builtin.blockinfile:
-    path: "{{ ansible_user_dir }}/.bashrc"
+    path: "{{ ansible_facts.user_dir }}/.bashrc"
     block: |
       export LS_OPTIONS='--color=auto'
       eval "`dircolors`"

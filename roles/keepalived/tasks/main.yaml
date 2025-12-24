@@ -2,6 +2,7 @@
 - name: Enable nonlocal IP binding
   ansible.builtin.copy:
     dest: /etc/sysctl.d/ip_nonlocal_bind.conf
+    mode: "0644"
     content: |
       net.ipv4.ip_nonlocal_bind = 1
       net.ipv6.ip_nonlocal_bind = 1

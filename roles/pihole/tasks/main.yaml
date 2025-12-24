@@ -39,8 +39,8 @@
 - name: Check pihole container
   ansible.builtin.uri:
     url: http://localhost/admin
-  register: result
-  until: result.status == 200
+  register: pihole_result
+  until: pihole_result.status == 200
   retries: 5
   delay: 10
 

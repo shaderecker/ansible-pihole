@@ -7,11 +7,11 @@
   community.crypto.openssh_keypair:
     comment: pihole-sync-{{ inventory_hostname }}
     path: .ssh/id_rsa_sync
-  register: ssh_key
+  register: sync_ssh_key
 
 - name: Add key to authorized_keys on all other nodes
   ansible.posix.authorized_key:
-    key: "{{ ssh_key.public_key }}"
+    key: "{{ sync_ssh_key.public_key }}"
     user: "{{ ansible_user }}"
   delegate_to: "{{ item }}"
   loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
