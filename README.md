@@ -9,8 +9,7 @@ For more info about the Docker Pi-hole image please check the official repositor
 
 ## Base Setup
 - An [Ansible](https://www.ansible.com/) controller machine with Ansible [installed](https://docs.ansible.com/ansible/latest/installation_guide/index.html) (version 2.15 or later)
-- The [community.crypto](https://galaxy.ansible.com/ui/repo/published/community/crypto) Ansible collection installed
-- The [ansible.posix](https://galaxy.ansible.com/ui/repo/published/ansible/posix) Ansible collection installed
+- Necessary collections installed with `ansible-galaxy collection install -r requirements.yml`
 - One or more Raspberry Pi's with [Raspberry Pi OS Lite (64-bit)](https://www.raspberrypi.com/software/operating-systems/) (bookworm)
 - I recommend using the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) for preparing your SD Cards since this easily allows the initial image configuration:
   - Set username and password
