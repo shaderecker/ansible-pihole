@@ -1,10 +1,10 @@
 #!/bin/bash
 
-key="-i {{ ansible_user_dir }}/{{ ssh_key.filename }}"
+key="-i {{ ansible_facts.user_dir }}/{{ sync_ssh_key.filename }}"
 host_key_check="-o StrictHostKeyChecking=no"
 target="{{ ansible_user }}@{{ sync_target }}"
-sync_dir="{{ ansible_user_dir }}/{{ sync_dir.path }}"
-pihole_dir="{{ ansible_user_dir }}/pihole"
+sync_dir="{{ ansible_facts.user_dir }}/{{ sync_dir.path }}"
+pihole_dir="{{ ansible_facts.user_dir }}/pihole"
 
 if [[ $(ip a | grep {{ sync_target }}) ]]; then
   nice -n 19 sqlite3 $pihole_dir/pihole/gravity.db ".backup $sync_dir/gravity.dump"

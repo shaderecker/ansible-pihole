@@ -33,5 +33,5 @@
   ansible.builtin.cron:
     hour: "2,14"
     minute: "0"
-    job: "{{ ansible_user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
+    job: "{{ ansible_facts.user_dir }}/{{ sync_dir.path }}/pihole_sync.sh"
     name: pihole-sync
