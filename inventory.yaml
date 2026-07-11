@@ -1,19 +1,32 @@
 all:
   hosts:
     pihole-1:
-      ansible_host: 192.168.178.45
+      ansible_user: ohthehugemanatee
+      ansible_host: 10.10.10.41
       priority: 101
     pihole-2:
-      ansible_host: 192.168.178.46
+      ansible_user: ohthehugemanatee
+      ansible_host: 10.10.10.42
       priority: 100
   vars:
     ansible_user: pi
     timezone: "Europe/Berlin"
     static_dns: "1.1.1.1"
-    pihole_image: "pihole/pihole:2025.11.1"
-    ftlconf_webserver_api_password: Intranet # example value, change it and better use ansible-vault
+    pihole_image: "pihole/pihole:2026.07.2"
+    ftlconf_webserver_api_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          37396135376639316465363433616437363465363038396161316465663030353437343961363632
+          6436623932356337386335643032316239323061343466340a383235643064373830663835613032
+          61643636613937623735313730613631613361386338616632663836373530623064383732373663
+          6136346261373136340a623333616132373537336139383737336462633330393833336164623534
+          3161
     ftlconf_dns_upstreams: "1.1.1.1;2606:4700:4700::1111"
-    ftlconf_dns_revservers: "true,192.168.178.0/24,192.168.178.1,fritz.box"
-    pihole_vip_ipv4: "192.168.178.10/24"
-    pihole_vip_ipv6: "fd00::10/64"
+    ftlconf_dns_revservers: "false"
+    pihole_vip_ipv4: "10.10.10.100/24"
+    pihole_vip_ipv6: "fd32:657e:44db:ff51:1"
+    #sync_target: "{{ hostvars['pihole-2'].ansible_host }}"
     sync_target: "{{ pihole_vip_ipv4.split('/')[0] }}"
+    pihole_rev_server_domain: "berlin.vertesi.com"
+    pihole_rev_server_target: "10.10.10.1"
+    pihole_rev_server_cidr: "10.10.10.1/24"
+    pihole_ha_mode: yes
